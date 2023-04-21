@@ -26,7 +26,7 @@ index 0000000000000..94e24b5926dd7
 +#include "sun8i-t113.dtsi"
 +
 +/ {
-+	model = "MangoPi MQ-Dual";
++	model = "MangoPi MQ-R";
 +	compatible = "allwinner,sun20i-d1", "allwinner,sun8i";
 +
 +	aliases {
