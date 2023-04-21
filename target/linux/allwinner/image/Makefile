@@ -33,8 +33,9 @@ define Device/Default
   PROFILES := Default
   KERNEL_NAME := zImage
   KERNEL := kernel-bin | uImage none
-  IMAGES := sdcard.img.gz
-  IMAGE/sdcard.img.gz := sunxi-sdcard | append-metadata | gzip
+  IMAGES := 
+  # IMAGES := sdcard.img.gz
+  # IMAGE/sdcard.img.gz := sunxi-sdcard | append-metadata | gzip
   SUNXI_DTS_DIR :=
   SUNXI_DTS = $$(SUNXI_DTS_DIR)$$(SOC)-$(lastword $(subst _, ,$(1)))
 endef
