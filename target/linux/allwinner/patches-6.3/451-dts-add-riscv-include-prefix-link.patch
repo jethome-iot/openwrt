@@ -1,0 +1,8 @@
+diff --git a/scripts/dtc/include-prefixes/riscv b/scripts/dtc/include-prefixes/riscv
+new file mode 120000
+index 0000000000000..2025094189380
+--- /dev/null
++++ b/scripts/dtc/include-prefixes/riscv
+@@ -0,0 +1 @@
++../../../arch/riscv/boot/dts
+\ No newline at end of file
