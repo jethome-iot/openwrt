@@ -15,7 +15,7 @@ new file mode 100644
 index 0000000000000..94e24b5926dd7
 --- /dev/null
 +++ b/arch/arm/boot/dts/sun8i-t113s-mangopi-mq-r-t113.dts
-@@ -0,0 +1,385 @@
+@@ -0,0 +1,306 @@
 +// SPDX-License-Identifier: (GPL-2.0+ or MIT)
 +// Copyright (C) 2022 Samuel Holland <samuel@sholland.org>
 +
@@ -39,9 +39,9 @@ index 0000000000000..94e24b5926dd7
 +        chosen {
 +		stdout-path = "serial3:115200n8";
 +/*
-+                bootargs = "mem=128M cma=72M root=/dev/mmcblk0p2 init=/sbin/init rootwait earlyprintk=sunxi-uart,0x02501400 console=tty0 console=ttyS5,115200";
++                bootargs = "mem=128M cma=64M root=/dev/mmcblk0p2 init=/sbin/init rootwait console=ttyS3,115200 earlyprintk=sunxi-uart,0x02500c00";
 +*/
-+                bootargs = "mem=128M cma=64M root=/dev/mmcblk0p2 init=/sbin/init rootwait console=ttyS3,115200 earlyprintk=sunxi-uart,0x02501400";
++                bootargs = "mem=128M cma=48M console=ttyS3,115200 earlyprintk=sunxi-uart,0x2500c00 rootfstype=squashfs rootwait";
 +        };
 +
 +	reg_vcc: vcc {
@@ -81,33 +81,6 @@ index 0000000000000..94e24b5926dd7
 +		regulator-min-microvolt = <900000>;
 +		regulator-max-microvolt = <900000>;
 +		vin-supply = <&reg_vcc>;
-+	};
-+
-+
-+	dmic_codec: dmic-codec {
-+		compatible = "dmic-codec";
-+		num-channels = <2>;
-+		#sound-dai-cells = <0>;
-+	};
-+
-+	dmic-sound {
-+		compatible = "simple-audio-card";
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		simple-audio-card,dai-link@0 {
-+			format = "pdm";
-+			frame-master = <&link0_cpu>;
-+			bitclock-master = <&link0_cpu>;
-+
-+			link0_cpu: cpu {
-+				sound-dai = <&dmic>;
-+			};
-+
-+			link0_codec: codec {
-+				sound-dai = <&dmic_codec>;
-+			};
-+		};
 +	};
 +
 +        leds {
@@ -151,31 +124,6 @@ index 0000000000000..94e24b5926dd7
 +	status = "okay";
 +};
 +
-+&de {
-+	status = "okay";
-+};
-+
-+&dsi {
-+	pinctrl-0 = <&dsi_4lane_pins>;
-+	pinctrl-names = "default";
-+	status = "disabled";
-+
-+        panel: panel@0 {
-+                reg = <0>;
-+                compatible = "lg,lh500wx1-sd03";
-+                pinctrl-names = "default";
-+/*
-+                pinctrl-0 = <&panel_pin>;
-+
-+                port {
-+                        panel_in: endpoint {
-+                                remote-endpoint = <&dsi0_out>;
-+                        };
-+                };
-+*/
-+        };
-+};
-+
 +&pio {
 +
 +	vcc-pb-supply = <&reg_vcc_3v3>;
@@ -199,11 +147,6 @@ index 0000000000000..94e24b5926dd7
 +		bias-pull-up;
 +	};		
 +
-+	uart5_pb4_pins: uart5-pb4-pins {
-+	    pins = "PB4", "PB5";
-+	    function = "uart5";
-+	};
-+
 +        uart3_pb_pins: uart3_pb_pins {
 +                pins = "PB6", "PB7";
 +                function = "uart3";
@@ -226,12 +169,6 @@ index 0000000000000..94e24b5926dd7
 +        status = "okay";
 +
 +        /* XR829 bluetooth is connected here */
-+};
-+
-+&uart5 {
-+	pinctrl-0 = <&uart5_pb4_pins>;
-+	pinctrl-names = "default";
-+	status = "okay";
 +};
 +
 +&uart3 {
@@ -272,22 +209,23 @@ index 0000000000000..94e24b5926dd7
 +
 +                        partition@0 {
 +                                label = "awboot";
-+                                reg = <0x00000000 0x00020000>;	/* 128K */
-+                        };
-+
-+                        partition@20000 {
-+                                label = "dtb";
-+                                reg = <0x00020000 0x00020000>;  /* 128k */
++                                reg = <0x0 0x20000>;
++				read-only;
 +                        };
 +
 +                        partition@40000 {
-+                                label = "kernel";
-+                                reg = <0x00040000 0x00800000>;  /* 8MB */
++                                label = "dtb";
++                                reg = <0x40000 0x40000>;
 +                        };
 +
-+                        partition@840000 {
-+                                label = "filesystem";
-+                                reg = <0x00840000 0x0f7c0000>;
++                        partition@80000 {
++                                label = "kernel";
++                                reg = <0x80000 0x800000>;
++                        };
++
++                        partition@880000 {
++				label = "ubi";
++                                reg = <0x880000 0x75c0000>;
 +                        };
 +                };
 +        };
@@ -322,29 +260,12 @@ index 0000000000000..94e24b5926dd7
 +        };
 +};
 +
-+&codec {
-+	routing = "Headphone Jack", "HPOUTL",
-+		  "Headphone Jack", "HPOUTR",
-+		  "Headset Microphone", "MICIN3"; 
-+
-+/*		  "LINEINL", "HPOUTL",
-+		  "LINEINR", "HPOUTR";
-+*/
-+	widgets = "Microphone", "Headset Microphone",
-+		  "Headphone", "Headphone Jack";
-+	status = "disabled";
-+};
-+
 +&usb_otg {
 +	dr_mode = "otg";
 +	status = "okay";
 +};
 +
 +&ehci0 {
-+	status = "okay";
-+};
-+
-+&dmic {
 +	status = "okay";
 +};
 +
@@ -398,6 +319,6 @@ index 0000000000000..94e24b5926dd7
 +&can1 {
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&can1_pins>;
-+	status = "disabled";
++	status = "okay";
 +};
 +
