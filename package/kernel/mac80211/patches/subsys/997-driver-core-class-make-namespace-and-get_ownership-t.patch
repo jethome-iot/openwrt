@@ -1,0 +1,38 @@
+From fa627348cfc7fb174468d88756b83c2d97890b07 Mon Sep 17 00:00:00 2001
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Date: Sat, 1 Oct 2022 18:54:26 +0200
+Subject: [PATCH] driver core: class: make namespace and get_ownership take
+ const *
+
+The callbacks in struct class namespace() and get_ownership() do not
+modify the struct device passed to them, so mark the pointer as constant
+and fix up all callbacks in the kernel to have the correct function
+signature.
+
+This helps make it more obvious what calls and callbacks do, and do not,
+modify structures passed to them.
+
+Cc: "Rafael J. Wysocki" <rafael@kernel.org>
+Link: https://lore.kernel.org/r/20221001165426.2690912-1-gregkh@linuxfoundation.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/base/core.c              | 4 ++--
+ drivers/infiniband/core/device.c | 4 ++--
+ drivers/net/ipvlan/ipvtap.c      | 4 ++--
+ drivers/net/macvtap.c            | 4 ++--
+ include/linux/device/class.h     | 4 ++--
+ net/core/net-sysfs.c             | 8 ++++----
+ net/wireless/sysfs.c             | 2 +-
+ 7 files changed, 15 insertions(+), 15 deletions(-)
+
+--- a/net/wireless/sysfs.c
++++ b/net/wireless/sysfs.c
+@@ -165,7 +165,7 @@ static SIMPLE_DEV_PM_OPS(wiphy_pm_ops, w
+ #define WIPHY_PM_OPS NULL
+ #endif
+ 
+-static const void *wiphy_namespace(struct device *d)
++static const void *wiphy_namespace(const struct device *d)
+ {
+ 	struct wiphy *wiphy = container_of(d, struct wiphy, dev);
+ 
