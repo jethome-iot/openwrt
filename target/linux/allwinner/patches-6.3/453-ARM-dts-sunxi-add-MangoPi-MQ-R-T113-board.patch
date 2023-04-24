@@ -37,7 +37,7 @@ index 0000000000000..94e24b5926dd7
 +	};
 +
 +        chosen {
-+		stdout-path = "serial5:115200n8";
++		stdout-path = "serial3:115200n8";
 +/*
 +                bootargs = "mem=128M cma=72M root=/dev/mmcblk0p2 init=/sbin/init rootwait earlyprintk=sunxi-uart,0x02501400 console=tty0 console=ttyS5,115200";
 +*/
