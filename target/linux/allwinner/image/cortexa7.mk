@@ -2,11 +2,13 @@
 #
 # Copyright (C) 2013-2019 OpenWrt.org
 # Copyright (C) 2016 Yousong Zhou
+# Copyright (C) 2023 @lmahmutov
 
 define Device/mangopi_mq-r 
   DEVICE_VENDOR := MangoPi
   DEVICE_MODEL := MQ-R
   SOC := sun8i-t113s
+  DEVICE_DTS := sun8i-t113s-mangopi-mq-r
   BLOCKSIZE := 128k
   PAGESIZE := 2048
   UBINIZE_OPTS := -E 5

@@ -6,15 +6,15 @@ index efe4152e5846d..3367e24146da8 100644
  	sun8i-s3-elimo-initium.dtb \
  	sun8i-s3-lichee-zero-plus.dtb \
  	sun8i-s3-pinecube.dtb \
-+	sun8i-t113s-mangopi-mq-r-t113.dtb \
++	sun8i-t113s-mangopi-mq-r.dtb \
  	sun8i-t3-cqa3t-bv3.dtb \
  	sun8i-v3-sl631-imx179.dtb \
  	sun8i-v3s-licheepi-zero.dtb \
-diff --git a/arch/arm/boot/dts/sun8i-t113s-mangopi-mq-r-t113.dts b/arch/arm/boot/dts/sun8i-t113s-mangopi-mq-r-t113.dts
+diff --git a/arch/arm/boot/dts/sun8i-t113s-mangopi-mq-r.dts b/arch/arm/boot/dts/sun8i-t113s-mangopi-mq-r.dts
 new file mode 100644
 index 0000000000000..94e24b5926dd7
 --- /dev/null
-+++ b/arch/arm/boot/dts/sun8i-t113s-mangopi-mq-r-t113.dts
++++ b/arch/arm/boot/dts/sun8i-t113s-mangopi-mq-r.dts
 @@ -0,0 +1,348 @@
 +// SPDX-License-Identifier: (GPL-2.0+ or MIT)
 +// Copyright (C) 2022 Samuel Holland <samuel@sholland.org>
