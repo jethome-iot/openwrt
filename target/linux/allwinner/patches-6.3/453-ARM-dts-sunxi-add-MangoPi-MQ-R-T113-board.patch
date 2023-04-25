@@ -15,7 +15,7 @@ new file mode 100644
 index 0000000000000..94e24b5926dd7
 --- /dev/null
 +++ b/arch/arm/boot/dts/sun8i-t113s-mangopi-mq-r-t113.dts
-@@ -0,0 +1,323 @@
+@@ -0,0 +1,348 @@
 +// SPDX-License-Identifier: (GPL-2.0+ or MIT)
 +// Copyright (C) 2022 Samuel Holland <samuel@sholland.org>
 +
@@ -84,15 +84,18 @@ index 0000000000000..94e24b5926dd7
 +		vin-supply = <&reg_vcc>;
 +	};
 +
-+        leds {
-+                compatible = "gpio-leds";
++	panel {
++		compatible = "okaya,rs800480t-7x0gp";
++/*        backlight = <&backlight>; */
++/*        power-supply = <&reg_sw>; */
 +
-+                status_led {
-+			linux,default-trigger = "heartbeat";
-+                        label = "blue:status";
-+                        gpios = <&pio 3 22 GPIO_ACTIVE_HIGH>;
-+                };
-+        };
++		port {
++			panel_input: endpoint {
++				remote-endpoint = <&tcon_lcd0_out_panel_in>;
++			};
++		};
++	};
++
 +/*
 +	wifi_pwrseq: wifi-pwrseq {
 +		compatible = "mmc-pwrseq-simple";
@@ -165,6 +168,13 @@ index 0000000000000..94e24b5926dd7
 +                function = "clk";
 +        };
 +
++	lcd_rgb666_pd19_pins: lcd-rgb666-pd19-pins {
++		pins = "PD0", "PD1", "PD2", "PD3", "PD4", "PD5",
++			   "PD6", "PD7", "PD8", "PD9", "PD10", "PD11",
++			   "PD12", "PD13", "PD14", "PD15", "PD16", "PD17",
++			   "PD18", "PD19";
++		function = "lcd0";
++	};
 +};
 +
 +&uart1 {
@@ -339,3 +349,18 @@ index 0000000000000..94e24b5926dd7
 +	status = "okay";
 +};
 +
++&de {
++	status = "okay";
++};
++
++&tcon_lcd0 {
++	pinctrl-0 = <&lcd_rgb666_pd19_pins>;
++	pinctrl-names = "default";
++	status = "okay";
++};          
++	
++&tcon_lcd0_out {
++	tcon_lcd0_out_panel_in: endpoint {
++		remote-endpoint = <&panel_input>;
++	};
++};
