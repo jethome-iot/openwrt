@@ -15,7 +15,7 @@ new file mode 100644
 index 0000000000000..94e24b5926dd7
 --- /dev/null
 +++ b/arch/arm/boot/dts/sun8i-t113s-mangopi-mq-r.dts
-@@ -0,0 +1,348 @@
+@@ -0,0 +1,307 @@
 +// SPDX-License-Identifier: (GPL-2.0+ or MIT)
 +// Copyright (C) 2022 Samuel Holland <samuel@sholland.org>
 +
@@ -30,18 +30,13 @@ index 0000000000000..94e24b5926dd7
 +	compatible = "allwinner,sun20i-d1", "allwinner,sun8i";
 +
 +	aliases {
-+		/*ethernet0 = &rtl8189f;*/
 +		ethernet0 = &rtl8723ds;
-+		/*mmc0 = &mmc0;*/
 +		serial1 = &uart1;
 +		serial3 = &uart3;
 +	};
 +
 +        chosen {
 +		stdout-path = "serial3:115200n8";
-+/*
-+                bootargs = "mem=128M cma=64M root=/dev/mmcblk0p2 init=/sbin/init rootwait console=ttyS3,115200 earlyprintk=sunxi-uart,0x02500c00";
-+*/
 +                bootargs = "mem=128M cma=48M console=ttyS3,115200 earlyprintk=sunxi-uart,0x2500c00 rootfstype=squashfs rootwait";
 +        };
 +
@@ -96,21 +91,9 @@ index 0000000000000..94e24b5926dd7
 +		};
 +	};
 +
-+/*
 +	wifi_pwrseq: wifi-pwrseq {
 +		compatible = "mmc-pwrseq-simple";
-+		clocks = <&ccu CLK_FANOUT1>;
-+		clock-names = "ext_clock";
-+		reset-gpios = <&pio 6 12 GPIO_ACTIVE_LOW>;  //PG12
-+		assigned-clocks = <&ccu CLK_FANOUT1>;
-+		assigned-clock-rates = <32768>;
-+		pinctrl-0 = <&clk_pg11_pin>;
-+		pinctrl-names = "default";
-+	};
-+*/
-+	wifi_pwrseq: wifi-pwrseq {
-+		compatible = "mmc-pwrseq-simple";
-+		reset-gpios = <&pio 6 17 GPIO_ACTIVE_LOW>; /* PG17 */
++		reset-gpios = <&pio 6 12 GPIO_ACTIVE_LOW>; /* PG12 */
 +	};
 +};
 +
@@ -185,7 +168,7 @@ index 0000000000000..94e24b5926dd7
 +
 +	bluetooth {
 +		compatible = "realtek,rtl8723ds-bt";
-+		device-wake-gpios = <&pio 6 18 GPIO_ACTIVE_HIGH>; /* PG18 */
++		device-wake-gpios = <&pio 6 13 GPIO_ACTIVE_HIGH>; /* PG13 */
 +		enable-gpios = <&pio 6 15 GPIO_ACTIVE_HIGH>; /* PG15 */
 +		host-wake-gpios = <&pio 6 14 GPIO_ACTIVE_HIGH>; /* PG14 */
 +	};
@@ -195,22 +178,6 @@ index 0000000000000..94e24b5926dd7
 +        pinctrl-0 = <&uart3_pb_pins>;
 +	pinctrl-names = "default";
 +        status = "okay";
-+};
-+
-+&i2c2 {
-+	pinctrl-0 = <&i2c2_pe12_pins>;
-+	pinctrl-names = "default";
-+	status = "okay";
-+
-+	gt911: touchscreen@28 {
-+		compatible = "goodix,gt911";
-+		reg = <0x28>;
-+		interrupt-parent = <&pio>;
-+		interrupts = <2 3 IRQ_TYPE_EDGE_FALLING>;
-+		irq-gpios = <&pio 2 3 GPIO_ACTIVE_HIGH>;
-+		reset-gpios = <&pio 2 2 GPIO_ACTIVE_HIGH>;
-+		touchscreen-swapped-x-y;
-+	};
 +};
 +
 +&spi0 {
@@ -263,26 +230,18 @@ index 0000000000000..94e24b5926dd7
 +};
 +
 +&mmc1 {
-+	bus-width = <4>;
-+	mmc-pwrseq = <&wifi_pwrseq>;
-+	non-removable;
-+	vmmc-supply = <&reg_vcc_3v3>;
-+	vqmmc-supply = <&reg_vcc_3v3>;
 +	pinctrl-0 = <&mmc1_pins>;
 +	pinctrl-names = "default";
++	vmmc-supply = <&reg_vcc_3v3>;
++	non-removable;
++	bus-width = <4>;
++	mmc-pwrseq = <&wifi_pwrseq>;
 +	status = "okay";
-+/*
-+        rtl8189f: sdio_wifi@1 {
-+                reg = <1>;
-+		interrupt-parent = <&pio>;
-+		interrupts = <6 10 IRQ_TYPE_LEVEL_HIGH>; // PG10
-+		interrupt-names = "host-wake";
-+        };
-+*/
++
 +	rtl8723ds: wifi@1 {
 +		reg = <1>;
 +		interrupt-parent = <&pio>;
-+		interrupts = <6 10 IRQ_TYPE_LEVEL_LOW>; /* PG10 */
++		interrupts = <6 10 IRQ_TYPE_LEVEL_LOW>;
 +		interrupt-names = "host-wake";
 +	};
 +};
