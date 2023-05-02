@@ -10,9 +10,7 @@ OpenWrt для процессора Allwinner T113-S3
 Открываем консоль и устанавливаем пакеты в систему, необходимые для сборки прошивки,
 все дальнейшие действия будут производиться только в консоли:
 
-`sudo apt-get update`
-`sudo apt-get install subversion git`
-`sudo apt-get install g++ libncurses5-dev zlib1g-dev gawk libssl-dev unzip make`
+`sudo apt-get update && sudo apt-get install subversion git g++ libncurses5-dev zlib1g-dev gawk libssl-dev unzip make`
 
 После установки пакетов клонируем репозиторий в рабочий каталог.
 
