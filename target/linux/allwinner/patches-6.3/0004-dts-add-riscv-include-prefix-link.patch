@@ -1,0 +1,32 @@
+From 839f93be713993971996f77a45f70be93d5b7e8d Mon Sep 17 00:00:00 2001
+From: Andre Przywara <andre.przywara@arm.com>
+Date: Mon, 20 Mar 2023 00:52:46 +0000
+Subject: [PATCH 4/7] dts: add riscv include prefix link
+
+The Allwinner D1/D1s SoCs (with a RISC-V core) use an (almost?) identical
+die as their R528/T113-s siblings with ARM Cortex-A7 cores.
+
+To allow sharing the basic SoC .dtsi files across those two
+architectures as well, introduce a symlink to the RISC-V DT directory.
+
+Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
+Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
+Link: https://lore.kernel.org/r/20230320005249.13403-2-andre.przywara@arm.com
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+---
+ scripts/dtc/include-prefixes/riscv | 1 +
+ 1 file changed, 1 insertion(+)
+ create mode 120000 scripts/dtc/include-prefixes/riscv
+
+diff --git a/scripts/dtc/include-prefixes/riscv b/scripts/dtc/include-prefixes/riscv
+new file mode 120000
+index 000000000000..202509418938
+--- /dev/null
++++ b/scripts/dtc/include-prefixes/riscv
+@@ -0,0 +1 @@
++../../../arch/riscv/boot/dts
+\ No newline at end of file
+-- 
+2.34.1
+
