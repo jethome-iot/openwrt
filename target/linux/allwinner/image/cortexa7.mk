@@ -16,9 +16,10 @@ define Device/mangopi_mq-r
   KERNEL_NAME := zImage
   KERNEL_SUFFIX := -zImage
   KERNEL := kernel-bin
-  IMAGES := sysupgrade.bin dtb rootfs.bin
+  KERNEL_SIZE := 8650752
+  DTS_SIZE := 262144
+  IMAGES := sysupgrade.bin xfel.bin
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
-  IMAGE/rootfs.bin := append-ubi
-  IMAGE/dtb := install-dtb
+  IMAGE/xfel.bin := append-dtb | pad-to $$(DTS_SIZE) | append-kernel | pad-to $$(KERNEL_SIZE) | append-ubi
 endef
 TARGET_DEVICES += mangopi_mq-r
