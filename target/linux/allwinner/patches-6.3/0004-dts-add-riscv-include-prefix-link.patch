@@ -1,7 +1,7 @@
 From 839f93be713993971996f77a45f70be93d5b7e8d Mon Sep 17 00:00:00 2001
 From: Andre Przywara <andre.przywara@arm.com>
 Date: Mon, 20 Mar 2023 00:52:46 +0000
-Subject: [PATCH 4/9] dts: add riscv include prefix link
+Subject: [PATCH 04/13] dts: add riscv include prefix link
 
 The Allwinner D1/D1s SoCs (with a RISC-V core) use an (almost?) identical
 die as their R528/T113-s siblings with ARM Cortex-A7 cores.

@@ -1,0 +1,39 @@
+From 8fb21fca129bcfecf0ce87686e656a6bbff45ac3 Mon Sep 17 00:00:00 2001
+From: Vyacheslav Bocharov <adeep@lexina.in>
+Date: Wed, 3 May 2023 12:20:55 +0300
+Subject: [PATCH 13/13] Add sound nodes
+
+---
+ .../boot/dts/sun8i-t113s-sk-nano-lv-nand.dts  | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
+
+diff --git a/arch/arm/boot/dts/sun8i-t113s-sk-nano-lv-nand.dts b/arch/arm/boot/dts/sun8i-t113s-sk-nano-lv-nand.dts
+index c601891cb451..ec31f021586e 100644
+--- a/arch/arm/boot/dts/sun8i-t113s-sk-nano-lv-nand.dts
++++ b/arch/arm/boot/dts/sun8i-t113s-sk-nano-lv-nand.dts
+@@ -240,3 +240,22 @@ &rtp {
+ 	allwinner,ts-attached;
+ 	status = "okay";
+ };
++
++&reg_aldo {
++  regulator-min-microvolt = <1800000>;
++  regulator-max-microvolt = <1800000>;
++  vdd33-supply = <&reg_vcc_3v3>;
++};
++
++&codec {
++  routing = "Headphone Jack", "HPOUTL",
++      "Headphone Jack", "HPOUTR",
++      "Headset Microphone", "MICIN3";
++
++/*      "LINEINL", "HPOUTL",
++      "LINEINR", "HPOUTR";
++*/
++  widgets = "Microphone", "Headset Microphone",
++      "Headphone", "Headphone Jack";
++  status = "okay";
++};
+-- 
+2.34.1
+

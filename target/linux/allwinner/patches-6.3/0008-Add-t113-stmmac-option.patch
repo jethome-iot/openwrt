@@ -1,7 +1,7 @@
 From 7c61d636111157ffcc8b87d0a26e40f58340ff74 Mon Sep 17 00:00:00 2001
 From: Vyacheslav Bocharov <adeep@lexina.in>
 Date: Wed, 3 May 2023 09:52:12 +0300
-Subject: [PATCH 8/9] Add t113 stmmac option
+Subject: [PATCH 08/13] Add t113 stmmac option
 
 ---
  drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c | 13 +++++++++++++
