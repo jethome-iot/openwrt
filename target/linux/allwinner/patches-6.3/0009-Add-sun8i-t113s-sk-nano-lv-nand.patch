@@ -1,33 +1,32 @@
-From 67ba4af7ad2df9667042670becd271216374abd7 Mon Sep 17 00:00:00 2001
+From 5e6c8c39e284ef312898c7c5b76115e29d2f7229 Mon Sep 17 00:00:00 2001
 From: Vyacheslav Bocharov <adeep@lexina.in>
-Date: Tue, 2 May 2023 14:16:35 +0300
-Subject: [PATCH 6/9] Add Mango PI MQ-R
+Date: Wed, 3 May 2023 11:12:30 +0300
+Subject: [PATCH 9/9] Add sun8i-t113s-sk-nano-lv-nand
 
-Signed-off-by: Vyacheslav Bocharov <adeep@lexina.in>
 ---
  arch/arm/boot/dts/Makefile                    |   1 +
- .../arm/boot/dts/sun8i-t113s-mangopi-mq-r.dts | 307 ++++++++++++++++++
- 2 files changed, 308 insertions(+)
- create mode 100644 arch/arm/boot/dts/sun8i-t113s-mangopi-mq-r.dts
+ .../boot/dts/sun8i-t113s-sk-nano-lv-nand.dts  | 235 ++++++++++++++++++
+ 2 files changed, 236 insertions(+)
+ create mode 100644 arch/arm/boot/dts/sun8i-t113s-sk-nano-lv-nand.dts
 
 diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
-index efe4152e5846..512c023b1127 100644
+index 512c023b1127..b1ba8530e2cb 100644
 --- a/arch/arm/boot/dts/Makefile
 +++ b/arch/arm/boot/dts/Makefile
 @@ -1397,6 +1397,7 @@ dtb-$(CONFIG_MACH_SUN8I) += \
  	sun8i-s3-elimo-initium.dtb \
  	sun8i-s3-lichee-zero-plus.dtb \
  	sun8i-s3-pinecube.dtb \
-+	sun8i-t113s-mangopi-mq-r.dtb \
++	sun8i-t113s-sk-nano-lv-nand.dts \
+ 	sun8i-t113s-mangopi-mq-r.dtb \
  	sun8i-t3-cqa3t-bv3.dtb \
  	sun8i-v3-sl631-imx179.dtb \
- 	sun8i-v3s-licheepi-zero.dtb \
-diff --git a/arch/arm/boot/dts/sun8i-t113s-mangopi-mq-r.dts b/arch/arm/boot/dts/sun8i-t113s-mangopi-mq-r.dts
+diff --git a/arch/arm/boot/dts/sun8i-t113s-sk-nano-lv-nand.dts b/arch/arm/boot/dts/sun8i-t113s-sk-nano-lv-nand.dts
 new file mode 100644
-index 000000000000..de74685e8b0b
+index 000000000000..ccf9da284f55
 --- /dev/null
-+++ b/arch/arm/boot/dts/sun8i-t113s-mangopi-mq-r.dts
-@@ -0,0 +1,307 @@
++++ b/arch/arm/boot/dts/sun8i-t113s-sk-nano-lv-nand.dts
+@@ -0,0 +1,235 @@
 +// SPDX-License-Identifier: (GPL-2.0+ or MIT)
 +// Copyright (C) 2022 Samuel Holland <samuel@sholland.org>
 +
@@ -42,8 +41,7 @@ index 000000000000..de74685e8b0b
 +	compatible = "allwinner,sun20i-d1", "allwinner,sun8i";
 +
 +	aliases {
-+		ethernet0 = &rtl8723ds;
-+		serial1 = &uart1;
++		ethernet0 = &emac;
 +		serial3 = &uart3;
 +	};
 +
@@ -102,11 +100,6 @@ index 000000000000..de74685e8b0b
 +			};
 +		};
 +	};
-+
-+	wifi_pwrseq: wifi-pwrseq {
-+		compatible = "mmc-pwrseq-simple";
-+		reset-gpios = <&pio 6 12 GPIO_ACTIVE_LOW>; /* PG12 */
-+	};
 +};
 +
 +&reg_aldo {
@@ -128,27 +121,12 @@ index 000000000000..de74685e8b0b
 +};
 +
 +&pio {
-+
 +	vcc-pb-supply = <&reg_vcc_3v3>;
 +	vcc-pc-supply = <&reg_vcc_3v3>;
 +	vcc-pd-supply = <&reg_vcc_3v3>;
 +	vcc-pe-supply = <&reg_avdd2v8>;
 +	vcc-pf-supply = <&reg_vcc_3v3>;
 +	vcc-pg-supply = <&reg_vcc_3v3>;
-+
-+	can0_pins_a: can0_pins@0 {
-+		pins = "PB2", "PB3";
-+		function = "can0";
-+		drive-strength = <10>;
-+		bias-pull-up;
-+	};
-+
-+	can1_pins_a: can1_pins@0 {
-+		pins = "PB4", "PB5";
-+		function = "can1";
-+		drive-strength = <10>;
-+		bias-pull-up;
-+	};		
 +
 +        uart3_pb_pins: uart3_pb_pins {
 +                pins = "PB6", "PB7";
@@ -158,10 +136,11 @@ index 000000000000..de74685e8b0b
 +                bias-pull-up;
 +        };
 +
-+        clk_pg11_pin: clk-pg11-pin {
-+                pins = "PG11";
-+                function = "clk";
-+        };
++	rmii_pe10_pins: rmii-pe10-pins {
++		pins = "PE0", "PE1", "PE2", "PE3", "PE4",
++			   "PE5", "PE6", "PE7", "PE8", "PE9", "PE10";
++		function = "emac";
++	};
 +
 +	lcd_rgb666_pd19_pins: lcd-rgb666-pd19-pins {
 +		pins = "PD0", "PD1", "PD2", "PD3", "PD4", "PD5",
@@ -169,20 +148,6 @@ index 000000000000..de74685e8b0b
 +			   "PD12", "PD13", "PD14", "PD15", "PD16", "PD17",
 +			   "PD18", "PD19";
 +		function = "lcd0";
-+	};
-+};
-+
-+&uart1 {
-+	uart-has-rtscts;
-+	pinctrl-0 = <&uart1_pg6_pins>, <&uart1_pg8_rts_cts_pins>;
-+	pinctrl-names = "default";
-+	status = "okay";
-+
-+	bluetooth {
-+		compatible = "realtek,rtl8723ds-bt";
-+		device-wake-gpios = <&pio 6 13 GPIO_ACTIVE_HIGH>; /* PG13 */
-+		enable-gpios = <&pio 6 15 GPIO_ACTIVE_HIGH>; /* PG15 */
-+		host-wake-gpios = <&pio 6 14 GPIO_ACTIVE_HIGH>; /* PG14 */
 +	};
 +};
 +
@@ -230,34 +195,6 @@ index 000000000000..de74685e8b0b
 +        };
 +};
 +
-+&mmc0 {
-+	bus-width = <4>;
-+	cd-gpios = <&pio 5 6 (GPIO_ACTIVE_LOW)>;
-+	disable-wp;
-+	vmmc-supply = <&reg_vcc_3v3>;
-+	vqmmc-supply = <&reg_vcc_3v3>;
-+	pinctrl-0 = <&mmc0_pins>;
-+	pinctrl-names = "default";
-+	status = "okay";
-+};
-+
-+&mmc1 {
-+	pinctrl-0 = <&mmc1_pins>;
-+	pinctrl-names = "default";
-+	vmmc-supply = <&reg_vcc_3v3>;
-+	non-removable;
-+	bus-width = <4>;
-+	mmc-pwrseq = <&wifi_pwrseq>;
-+	status = "okay";
-+
-+	rtl8723ds: wifi@1 {
-+		reg = <1>;
-+		interrupt-parent = <&pio>;
-+		interrupts = <6 10 IRQ_TYPE_LEVEL_LOW>;
-+		interrupt-names = "host-wake";
-+	};
-+};
-+
 +&usb_otg {
 +	dr_mode = "otg";
 +	status = "okay";
@@ -280,7 +217,6 @@ index 000000000000..de74685e8b0b
 +	status = "okay";
 +};
 +
-+
 +&ths {
 +	status = "okay";
 +/*	vref-supply = <&reg_aldo>; */
@@ -295,28 +231,19 @@ index 000000000000..de74685e8b0b
 +&mdio {
 +	ext_rgmii_phy: ethernet-phy@1 {
 +		compatible = "ethernet-phy-ieee802.3-c22";
-+		reg = <1>;
++		reg = <0>;
 +	};
 +};
 +
 +&emac {
-+	pinctrl-0 = <&rgmii_pe_pins>;
++	pinctrl-0 = <&rmii_pe10_pins>;
 +	pinctrl-names = "default";
++	clocks = <&ccu CLK_BUS_EMAC>, <&ccu CLK_EMAC_25M>;
++	clock-names = "stmmaceth", "phy";
++	reset-gpios = <&pio 3 22 GPIO_ACTIVE_LOW>;
 +	phy-handle = <&ext_rgmii_phy>;
-+	phy-mode = "rgmii-id";
++	phy-mode = "rmii";
 +	phy-supply = <&reg_vcc_3v3>;
-+	status = "disabled";
-+};
-+
-+&can0 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&can0_pins>;
-+	status = "okay";
-+};
-+
-+&can1 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&can1_pins>;
 +	status = "okay";
 +};
 +
@@ -328,8 +255,8 @@ index 000000000000..de74685e8b0b
 +	pinctrl-0 = <&lcd_rgb666_pd19_pins>;
 +	pinctrl-names = "default";
 +	status = "okay";
-+};          
-+	
++};
++
 +&tcon_lcd0_out {
 +	tcon_lcd0_out_panel_in: endpoint {
 +		remote-endpoint = <&panel_input>;
