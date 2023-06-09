@@ -193,16 +193,12 @@ platform_other_check_image() {
 }
 
 platform_check_image() {
-	local board
-
-	board="$(board_name)"
-	case "$board" in
-	# Ideally, REQUIRE_IMAGE_METADATA=1 would suffice
-	# but this would require converting all other
-	# devices too.
-	meraki,mr26 | \
+	case "$(board_name)" in
 	meraki,mr32)
-		nand_do_platform_check "${board//,/_}" "$1"
+		# Ideally, REQUIRE_IMAGE_METADATA=1 would suffice
+		# but this would require converting all other
+		# devices too.
+		nand_do_platform_check meraki-mr32 "$1"
 		return $?
 		;;
 	*)
@@ -398,7 +394,6 @@ platform_other_do_upgrade() {
 
 platform_do_upgrade() {
 	case "$(board_name)" in
-	meraki,mr26 | \
 	meraki,mr32)
 		CI_KERNPART="part.safe"
 		nand_do_upgrade "$1"

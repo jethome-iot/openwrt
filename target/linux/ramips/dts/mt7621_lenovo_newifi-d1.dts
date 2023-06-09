@@ -142,21 +142,6 @@
 	nvmem-cell-names = "mac-address";
 };
 
-&gmac1 {
-	status = "okay";
-	label = "wan";
-	phy-handle = <&ethphy4>;
-
-	nvmem-cells = <&macaddr_factory_e006>;
-	nvmem-cell-names = "mac-address";
-};
-
-&mdio {
-	ethphy4: ethernet-phy@4 {
-		reg = <4>;
-	};
-};
-
 &switch0 {
 	ports {
 		port@1 {
@@ -167,6 +152,13 @@
 		port@2 {
 			status = "okay";
 			label = "lan1";
+		};
+
+		port@4 {
+			status = "okay";
+			label = "wan";
+			nvmem-cells = <&macaddr_factory_e006>;
+			nvmem-cell-names = "mac-address";
 		};
 	};
 };

@@ -10,7 +10,7 @@ define Device/asus_rt-n56u
   BLOCKSIZE := 64k
   IMAGE_SIZE := 7872k
   IMAGE/sysupgrade.bin += | mkrtn56uimg -s
-  DEVICE_VENDOR := ASUS
+  DEVICE_VENDOR := Asus
   DEVICE_MODEL := RT-N56U
   DEVICE_PACKAGES := kmod-usb-ohci kmod-usb2
   SUPPORTED_DEVICES += rt-n56u
@@ -106,7 +106,6 @@ endef
 TARGET_DEVICES += samsung_cy-swr1100
 
 define Device/sitecom_wlr-6000
-  $(Device/uimage-lzma-loader)
   SOC := rt3883
   BLOCKSIZE := 4k
   IMAGE_SIZE := 7244k

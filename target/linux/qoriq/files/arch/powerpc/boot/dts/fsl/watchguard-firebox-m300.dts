@@ -269,6 +269,7 @@
 				status = "disabled";
 
 				reg = "<5>";
+				label = "cpu";
 				ethernet = <&enet2>;
 				phy-mode = "rgmii-id";
 
@@ -280,6 +281,7 @@
 
 			port@6 {
 				reg = <6>;
+				label = "cpu";
 				ethernet = <&enet3>;
 				phy-mode = "rgmii-id";
 

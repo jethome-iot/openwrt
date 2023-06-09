@@ -20,7 +20,6 @@
  */
 
 #include <sys/types.h>
-#include <sys/random.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -32,7 +31,6 @@
 #include <stdbool.h>
 
 #include <mbedtls/bignum.h>
-#include <mbedtls/entropy.h>
 #include <mbedtls/x509_crt.h>
 #include <mbedtls/ecp.h>
 #include <mbedtls/rsa.h>
@@ -42,16 +40,12 @@
 #define PX5G_COPY "Copyright (c) 2009 Steven Barth <steven@midlink.org>"
 #define PX5G_LICENSE "Licensed under the GNU Lesser General Public License v2.1"
 
+static int urandom_fd;
 static char buf[16384];
 
 static int _urandom(void *ctx, unsigned char *out, size_t len)
 {
-	ssize_t ret;
-
-	ret = getrandom(out, len, 0);
-	if (ret < 0 || (size_t)ret != len)
-		return MBEDTLS_ERR_ENTROPY_SOURCE_FAILED;
-
+	read(urandom_fd, out, len);
 	return 0;
 }
 
@@ -312,6 +306,8 @@ int selfsigned(char **arg)
 
 int main(int argc, char *argv[])
 {
+	urandom_fd = open("/dev/urandom", O_RDONLY);
+
 	if (!argv[1]) {
 		//Usage
 	} else if (!strcmp(argv[1], "eckey")) {

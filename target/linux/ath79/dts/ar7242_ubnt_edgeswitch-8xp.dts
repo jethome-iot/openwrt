@@ -110,6 +110,8 @@
 &mdio0 {
 	status = "okay";
 
+	phy-mask = <0x10>;
+
 	ethernet-switch@1e {
 		compatible = "brcm,bcm53128";
 		reg = <0x1e>;
@@ -160,6 +162,7 @@
 
 			phy0: port8@8 {
 				reg = <8>;
+				label = "cpu";
 				ethernet = <&eth0>;
 
 				fixed-link {

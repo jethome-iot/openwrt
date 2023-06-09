@@ -20,7 +20,6 @@
 #include <linux/of_device.h>
 #include <linux/of_fdt.h>
 #include <linux/libfdt.h>
-#include <linux/version.h>
 
 #include "check.h"
 
@@ -73,12 +72,7 @@
 
 int parse_fit_partitions(struct parsed_partitions *state, u64 fit_start_sector, u64 sectors, int *slot, int add_remain)
 {
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 11, 0)
-	struct block_device *bdev = state->disk->part0;
-#else
-	struct block_device *bdev = state->bdev;
-#endif
-	struct address_space *mapping = bdev->bd_inode->i_mapping;
+	struct address_space *mapping = state->bdev->bd_inode->i_mapping;
 	struct page *page;
 	void *fit, *init_fit;
 	struct partition_meta_info *info;
@@ -122,7 +116,7 @@ int parse_fit_partitions(struct parsed_partitions *state, u64 fit_start_sector, 
 		return 0;
 	}
 
-	dsectors = get_capacity(bdev->bd_disk);
+	dsectors = get_capacity(state->bdev->bd_disk);
 	if (sectors)
 		dsectors = (dsectors>sectors)?sectors:dsectors;
 
@@ -148,7 +142,7 @@ int parse_fit_partitions(struct parsed_partitions *state, u64 fit_start_sector, 
 
 	np = of_find_node_by_path("/chosen");
 	if (np)
-		bootconf = of_get_property(np, "u-boot,bootconf", NULL);
+		bootconf = of_get_property(np, "bootconf", NULL);
 	else
 		bootconf = NULL;
 

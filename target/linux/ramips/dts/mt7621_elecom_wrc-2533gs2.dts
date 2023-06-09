@@ -44,7 +44,7 @@
 	nvmem-cell-names = "mac-address";
 };
 
-&gmac1 {
+&wan {
 	nvmem-cells = <&macaddr_factory_fffa>;
 	nvmem-cell-names = "mac-address";
 };

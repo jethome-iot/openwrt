@@ -79,7 +79,7 @@
 			#address-cells = <1>;
 			#size-cells = <1>;
 
-			partition@0 {
+			uboot: partition@0 {
 				label = "u-boot";
 				reg = <0x000000 0x040000>;
 				read-only;
@@ -91,10 +91,15 @@
 			};
 
 			partition@50000 {
-				/* Dual-Flash layout combined */
 				compatible = "denx,uimage";
 				label = "firmware";
-				reg = <0x050000 0xe80000>;
+				reg = <0x050000 0x740000>;
+			};
+
+			partition@790000 {
+				label = "vendor";
+				reg = <0x790000 0x740000>;
+				read-only;
 			};
 
 			partition@ed0000 {
@@ -109,34 +114,10 @@
 				read-only;
 			};
 
-			partition@ff0000 {
+			art: partition@ff0000 {
 				label = "art";
 				reg = <0xff0000 0x010000>;
 				read-only;
-
-				compatible = "nvmem-cells";
-				#address-cells = <1>;
-				#size-cells = <1>;
-
-				macaddr_art_0: macaddr@0 {
-					reg = <0x0 0x6>;
-				};
-
-				macaddr_art_6: macaddr@6 {
-					reg = <0x6 0x6>;
-				};
-
-				macaddr_art_c: macaddr@c {
-					reg = <0xc 0x6>;
-				};
-
-				calibration_art_1000: calibration@1000 {
-					reg = <0x1000 0x440>;
-				};
-
-				calibration_art_5000: calibration@5000 {
-					reg = <0x5000 0x440>;
-				};
 			};
 		};
 	};
@@ -148,8 +129,9 @@
 	ath9k: wifi@0,0 {
 		compatible = "pci168c,0030";
 		reg = <0x0000 0 0 0 0>;
-		nvmem-cells = <&macaddr_art_c>, <&calibration_art_5000>;
-		nvmem-cell-names = "mac-address", "calibration";
+		nvmem-cells = <&macaddr_art_c>;
+		nvmem-cell-names = "mac-address";
+		qca,no-eeprom;
 		#gpio-cells = <2>;
 		gpio-controller;
 	};
@@ -158,12 +140,15 @@
 &wmac {
 	status = "okay";
 
-	nvmem-cells = <&macaddr_art_6>, <&calibration_art_1000>;
-	nvmem-cell-names = "mac-address", "calibration";
+	mtd-cal-data = <&art 0x1000>;
+	nvmem-cells = <&macaddr_art_6>;
+	nvmem-cell-names = "mac-address";
 };
 
 &mdio0 {
 	status = "okay";
+
+	phy-mask = <0>;
 
 	phy0: ethernet-phy@0 {
 		reg = <0>;
@@ -190,5 +175,23 @@
 		rxd-delay = <3>;
 		txen-delay = <0>;
 		txd-delay = <0>;
+	};
+};
+
+&art {
+	compatible = "nvmem-cells";
+	#address-cells = <1>;
+	#size-cells = <1>;
+
+	macaddr_art_0: macaddr@0 {
+		reg = <0x0 0x6>;
+	};
+
+	macaddr_art_6: macaddr@6 {
+		reg = <0x6 0x6>;
+	};
+
+	macaddr_art_c: macaddr@c {
+		reg = <0xc 0x6>;
 	};
 };

@@ -96,7 +96,7 @@ struct notify_b {
 static void rtl838x_create_tx_header(struct p_hdr *h, unsigned int dest_port, int prio)
 {
 	// cpu_tag[0] is reserved on the RTL83XX SoCs
-	h->cpu_tag[1] = 0x0400;  // BIT 10: RTL8380_CPU_TAG
+	h->cpu_tag[1] = 0x0401;  // BIT 10: RTL8380_CPU_TAG, BIT0: L2LEARNING on
 	h->cpu_tag[2] = 0x0200;  // Set only AS_DPM, to enable DPM settings below
 	h->cpu_tag[3] = 0x0000;
 	h->cpu_tag[4] = BIT(dest_port) >> 16;
@@ -111,12 +111,12 @@ static void rtl839x_create_tx_header(struct p_hdr *h, unsigned int dest_port, in
 {
 	// cpu_tag[0] is reserved on the RTL83XX SoCs
 	h->cpu_tag[1] = 0x0100; // RTL8390_CPU_TAG marker
-	h->cpu_tag[2] = BIT(4); /* AS_DPM flag */
+	h->cpu_tag[2] = BIT(4) | BIT(7); /* AS_DPM (4) and L2LEARNING (7) flags */
 	h->cpu_tag[3] = h->cpu_tag[4] = h->cpu_tag[5] = 0;
 	// h->cpu_tag[1] |= BIT(1) | BIT(0); // Bypass filter 1/2
 	if (dest_port >= 32) {
 		dest_port -= 32;
-		h->cpu_tag[2] |= (BIT(dest_port) >> 16) & 0xf;
+		h->cpu_tag[2] = BIT(dest_port) >> 16;
 		h->cpu_tag[3] = BIT(dest_port) & 0xffff;
 	} else {
 		h->cpu_tag[4] = BIT(dest_port) >> 16;
@@ -682,7 +682,7 @@ static void rtl838x_hw_reset(struct rtl838x_eth_priv *priv)
 	else
 		reset_mask = 0xc;
 
-	sw_w32_mask(0, reset_mask, priv->r->rst_glb_ctrl);
+	sw_w32(reset_mask, priv->r->rst_glb_ctrl);
 
 	do { /* Wait for reset of NIC and Queues done */
 		udelay(20);
@@ -1030,32 +1030,8 @@ static int rtl838x_eth_stop(struct net_device *ndev)
 	return 0;
 }
 
-static void rtl838x_eth_set_multicast_list(struct net_device *ndev)
-{
-	/*
-	 * Flood all classes of RMA addresses (01-80-C2-00-00-{01..2F})
-	 * CTRL_0_FULL = GENMASK(21, 0) = 0x3FFFFF
-	 */
-	if (!(ndev->flags & (IFF_PROMISC | IFF_ALLMULTI))) {
-		sw_w32(0x0, RTL838X_RMA_CTRL_0);
-		sw_w32(0x0, RTL838X_RMA_CTRL_1);
-	}
-	if (ndev->flags & IFF_ALLMULTI)
-		sw_w32(GENMASK(21, 0), RTL838X_RMA_CTRL_0);
-	if (ndev->flags & IFF_PROMISC) {
-		sw_w32(GENMASK(21, 0), RTL838X_RMA_CTRL_0);
-		sw_w32(0x7fff, RTL838X_RMA_CTRL_1);
-	}
-}
-
 static void rtl839x_eth_set_multicast_list(struct net_device *ndev)
 {
-	/*
-	 * Flood all classes of RMA addresses (01-80-C2-00-00-{01..2F})
-	 * CTRL_0_FULL = GENMASK(31, 2) = 0xFFFFFFFC
-	 * Lower two bits are reserved, corresponding to RMA 01-80-C2-00-00-00
-	 * CTRL_1_FULL = CTRL_2_FULL = GENMASK(31, 0)
-	 */
 	if (!(ndev->flags & (IFF_PROMISC | IFF_ALLMULTI))) {
 		sw_w32(0x0, RTL839X_RMA_CTRL_0);
 		sw_w32(0x0, RTL839X_RMA_CTRL_1);
@@ -1063,53 +1039,72 @@ static void rtl839x_eth_set_multicast_list(struct net_device *ndev)
 		sw_w32(0x0, RTL839X_RMA_CTRL_3);
 	}
 	if (ndev->flags & IFF_ALLMULTI) {
-		sw_w32(GENMASK(31, 2), RTL839X_RMA_CTRL_0);
-		sw_w32(GENMASK(31, 0), RTL839X_RMA_CTRL_1);
-		sw_w32(GENMASK(31, 0), RTL839X_RMA_CTRL_2);
+		sw_w32(0x7fffffff, RTL839X_RMA_CTRL_0);
+		sw_w32(0x7fffffff, RTL839X_RMA_CTRL_1);
+		sw_w32(0x7fffffff, RTL839X_RMA_CTRL_2);
 	}
 	if (ndev->flags & IFF_PROMISC) {
-		sw_w32(GENMASK(31, 2), RTL839X_RMA_CTRL_0);
-		sw_w32(GENMASK(31, 0), RTL839X_RMA_CTRL_1);
-		sw_w32(GENMASK(31, 0), RTL839X_RMA_CTRL_2);
+		sw_w32(0x7fffffff, RTL839X_RMA_CTRL_0);
+		sw_w32(0x7fffffff, RTL839X_RMA_CTRL_1);
+		sw_w32(0x7fffffff, RTL839X_RMA_CTRL_2);
 		sw_w32(0x3ff, RTL839X_RMA_CTRL_3);
+	}
+}
+
+static void rtl838x_eth_set_multicast_list(struct net_device *ndev)
+{
+	struct rtl838x_eth_priv *priv = netdev_priv(ndev);
+
+	if (priv->family_id == RTL8390_FAMILY_ID)
+		return rtl839x_eth_set_multicast_list(ndev);
+
+	if (!(ndev->flags & (IFF_PROMISC | IFF_ALLMULTI))) {
+		sw_w32(0x0, RTL838X_RMA_CTRL_0);
+		sw_w32(0x0, RTL838X_RMA_CTRL_1);
+	}
+	if (ndev->flags & IFF_ALLMULTI)
+		sw_w32(0x1fffff, RTL838X_RMA_CTRL_0);
+	if (ndev->flags & IFF_PROMISC) {
+		sw_w32(0x1fffff, RTL838X_RMA_CTRL_0);
+		sw_w32(0x7fff, RTL838X_RMA_CTRL_1);
 	}
 }
 
 static void rtl930x_eth_set_multicast_list(struct net_device *ndev)
 {
-	/*
-	 * Flood all classes of RMA addresses (01-80-C2-00-00-{01..2F})
-	 * CTRL_0_FULL = GENMASK(31, 2) = 0xFFFFFFFC
-	 * Lower two bits are reserved, corresponding to RMA 01-80-C2-00-00-00
-	 * CTRL_1_FULL = CTRL_2_FULL = GENMASK(31, 0)
-	 */
-	if (ndev->flags & (IFF_ALLMULTI | IFF_PROMISC)) {
-		sw_w32(GENMASK(31, 2), RTL930X_RMA_CTRL_0);
-		sw_w32(GENMASK(31, 0), RTL930X_RMA_CTRL_1);
-		sw_w32(GENMASK(31, 0), RTL930X_RMA_CTRL_2);
-	} else {
+	if (!(ndev->flags & (IFF_PROMISC | IFF_ALLMULTI))) {
 		sw_w32(0x0, RTL930X_RMA_CTRL_0);
 		sw_w32(0x0, RTL930X_RMA_CTRL_1);
 		sw_w32(0x0, RTL930X_RMA_CTRL_2);
+	}
+	if (ndev->flags & IFF_ALLMULTI) {
+		sw_w32(0x7fffffff, RTL930X_RMA_CTRL_0);
+		sw_w32(0x7fffffff, RTL930X_RMA_CTRL_1);
+		sw_w32(0x7fffffff, RTL930X_RMA_CTRL_2);
+	}
+	if (ndev->flags & IFF_PROMISC) {
+		sw_w32(0x7fffffff, RTL930X_RMA_CTRL_0);
+		sw_w32(0x7fffffff, RTL930X_RMA_CTRL_1);
+		sw_w32(0x7fffffff, RTL930X_RMA_CTRL_2);
 	}
 }
 
 static void rtl931x_eth_set_multicast_list(struct net_device *ndev)
 {
-	/*
-	 * Flood all classes of RMA addresses (01-80-C2-00-00-{01..2F})
-	 * CTRL_0_FULL = GENMASK(31, 2) = 0xFFFFFFFC
-	 * Lower two bits are reserved, corresponding to RMA 01-80-C2-00-00-00.
-	 * CTRL_1_FULL = CTRL_2_FULL = GENMASK(31, 0)
-	 */
-	if (ndev->flags & (IFF_ALLMULTI | IFF_PROMISC)) {
-		sw_w32(GENMASK(31, 2), RTL931X_RMA_CTRL_0);
-		sw_w32(GENMASK(31, 0), RTL931X_RMA_CTRL_1);
-		sw_w32(GENMASK(31, 0), RTL931X_RMA_CTRL_2);
-	} else {
+	if (!(ndev->flags & (IFF_PROMISC | IFF_ALLMULTI))) {
 		sw_w32(0x0, RTL931X_RMA_CTRL_0);
 		sw_w32(0x0, RTL931X_RMA_CTRL_1);
 		sw_w32(0x0, RTL931X_RMA_CTRL_2);
+	}
+	if (ndev->flags & IFF_ALLMULTI) {
+		sw_w32(0x7fffffff, RTL931X_RMA_CTRL_0);
+		sw_w32(0x7fffffff, RTL931X_RMA_CTRL_1);
+		sw_w32(0x7fffffff, RTL931X_RMA_CTRL_2);
+	}
+	if (ndev->flags & IFF_PROMISC) {
+		sw_w32(0x7fffffff, RTL931X_RMA_CTRL_0);
+		sw_w32(0x7fffffff, RTL931X_RMA_CTRL_1);
+		sw_w32(0x7fffffff, RTL931X_RMA_CTRL_2);
 	}
 }
 
@@ -1252,7 +1247,6 @@ static int rtl838x_hw_receive(struct net_device *dev, int r, int budget)
 	struct rtl838x_eth_priv *priv = netdev_priv(dev);
 	struct ring_b *ring = priv->membase;
 	struct sk_buff *skb;
-	LIST_HEAD(rx_list);
 	unsigned long flags;
 	int i, len, work_done = 0;
 	u8 *data, *skb_data;
@@ -1330,7 +1324,7 @@ static int rtl838x_hw_receive(struct net_device *dev, int r, int budget)
 			dev->stats.rx_packets++;
 			dev->stats.rx_bytes += len;
 
-			list_add_tail(&skb->list, &rx_list);
+			netif_receive_skb(skb);
 		} else {
 			if (net_ratelimit())
 				dev_warn(&dev->dev, "low on memory - packet dropped\n");
@@ -1347,8 +1341,6 @@ static int rtl838x_hw_receive(struct net_device *dev, int r, int budget)
 		ring->c_rx[r] = (ring->c_rx[r] + 1) % priv->rxringlen;
 		last = (u32 *)KSEG1ADDR(sw_r32(priv->r->dma_if_rx_cur + r * 4));
 	} while (&ring->rx_r[r][ring->c_rx[r]] != last && work_done < budget);
-
-	netif_receive_skb_list(&rx_list);
 
 	// Update counters
 	priv->r->update_cntr(r, 0);
@@ -2250,7 +2242,7 @@ static int rtl83xx_set_features(struct net_device *dev, netdev_features_t featur
 		if (!(features & NETIF_F_RXCSUM))
 			sw_w32_mask(BIT(3), 0, priv->r->mac_port_ctrl(priv->cpu_port));
 		else
-			sw_w32_mask(0, BIT(3), priv->r->mac_port_ctrl(priv->cpu_port));
+			sw_w32_mask(0, BIT(4), priv->r->mac_port_ctrl(priv->cpu_port));
 	}
 
 	return 0;

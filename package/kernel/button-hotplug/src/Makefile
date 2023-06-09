@@ -1,1 +1,1 @@
-obj-m := button-hotplug.o
+obj-${CONFIG_BUTTON_HOTPLUG}	+= button-hotplug.o

@@ -31,7 +31,7 @@
 		led-upgrade = &led_warn;
 	};
 
-	thermal-zones {
+	thermal_zones {
 		chassis-thermal {
 			/* Poll every 20 seconds */
 			polling-delay = <20000>;
@@ -153,7 +153,6 @@
 		gpios = <&gpio0 2 GPIO_ACTIVE_HIGH>;
 		gpio-fan,speed-map = <0    0
 				      3000 1>;
-		#cooling-cells = <2>;
 	};
 
 	gpio-poweroff {

@@ -46,6 +46,7 @@
 		led_power: power {
 			label = "green:power";
 			gpios = <&gpio 11 GPIO_ACTIVE_LOW>;
+			default-state = "keep";
 		};
 
 		internet {
@@ -76,23 +77,6 @@
 			gpios = <&gpio 6 GPIO_ACTIVE_HIGH>;
 		};
 	};
-
-	virtual_flash {
-		compatible = "mtd-concat";
-		devices = <&firmware1 &firmware2>;
-
-		partitions {
-			compatible = "fixed-partitions";
-			#address-cells = <1>;
-			#size-cells = <1>;
-
-			partition@0 {
-				compatible = "denx,uimage";
-				label = "firmware";
-				reg = <0x0 0x1d20000>;
-			};
-		};
-	};
 };
 
 &spi0 {
@@ -101,7 +85,8 @@
 	flash@0 {
 		compatible = "jedec,spi-nor";
 		reg = <0>;
-		spi-max-frequency = <32000000>;
+		spi-max-frequency = <10000000>;
+		broken-flash-reset;
 
 		partitions {
 			compatible = "fixed-partitions";
@@ -121,13 +106,14 @@
 			};
 
 			factory: partition@40000 {
-				label = "rf-eeprom";
+				label = "factory";
 				reg = <0x40000 0x10000>;
 				read-only;
 			};
 
-			firmware1: partition@50000 {
-				label = "firmware_1";
+			partition@50000 {
+				compatible = "denx,uimage";
+				label = "firmware";
 				reg = <0x50000 0xe90000>;
 			};
 
@@ -167,9 +153,10 @@
 				read-only;
 			};
 
-			firmware2: partition@1050000 {
+			partition@1050000 {
 				label = "firmware_2";
 				reg = <0x1050000 0xe90000>;
+				read-only;
 			};
 
 			partition@1ee0000 {
@@ -202,7 +189,6 @@
 
 &pcie0 {
 	mt76@0,0 {
-		compatible = "mediatek,mt76";
 		reg = <0x0000 0 0 0 0>;
 		mediatek,mtd-eeprom = <&factory 0x8000>;
 		ieee80211-freq-limit = <5000000 6000000>;

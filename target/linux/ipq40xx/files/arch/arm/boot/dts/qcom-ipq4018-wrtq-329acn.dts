@@ -9,6 +9,11 @@
 	model = "Luma Home WRTQ-329ACN";
 	compatible = "luma,wrtq-329acn";
 
+	aliases {
+		ethernet0 = &gmac1;
+		ethernet1 = &gmac0;
+	};
+
 	i2c-gpio {
 		compatible = "i2c-gpio";
 		sda-gpios = <&tlmm 1 (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN)>;
@@ -42,6 +47,18 @@
 
 	soc {
 		rng@22000 {
+			status = "okay";
+		};
+
+		mdio@90000 {
+			status = "okay";
+
+			/delete-node/ ethernet-phy@0;
+			/delete-node/ ethernet-phy@1;
+			/delete-node/ ethernet-phy@3;
+		};
+
+		ess-psgmii@98000 {
 			status = "okay";
 		};
 
@@ -82,6 +99,17 @@
 		};
 
 		watchdog@b017000 {
+			status = "okay";
+		};
+
+		ess-switch@c000000 {
+			status = "okay";
+
+			switch_lan_bmp = <0x1e>;
+			switch_wan_bmp = <0x20>;
+		};
+
+		edma@c080000 {
 			status = "okay";
 		};
 	};
@@ -159,14 +187,6 @@
 				#address-cells = <1>;
 				#size-cells = <1>;
 
-				macaddr_art_0: macaddr@0{
-					reg = <0x0000 0x0006>;
-				};
-
-				macaddr_art_6: macaddr@6{
-					reg = <0x0006 0x0006>;
-				};
-
 				precal_art_1000: precal@1000 {
 					reg = <0x1000 0x2f20>;
 				};
@@ -209,43 +229,14 @@
 	status = "okay";
 };
 
-&gmac {
-	status = "okay";
+&gmac0 {
+	qcom,phy_mdio_addr = <2>;
+	qcom,poll_required = <1>;
 };
 
-&ethphy0 {
-	status = "disabled";
-};
-
-&ethphy1 {
-	status = "disabled";
-};
-
-&ethphy3 {
-	status = "disabled";
-};
-
-&mdio {
-	status = "okay";
-};
-
-&switch {
-	status = "okay";
-};
-
-&swport3 {
-	status = "okay";
-
-	label = "lan";
-	nvmem-cell-names = "mac-address";
-	nvmem-cells = <&macaddr_art_6>;
-};
-
-&swport5 {
-	status = "okay";
-
-	nvmem-cell-names = "mac-address";
-	nvmem-cells = <&macaddr_art_0>;
+&gmac1 {
+	qcom,phy_mdio_addr = <4>;
+	qcom,poll_required = <1>;
 };
 
 &tlmm {

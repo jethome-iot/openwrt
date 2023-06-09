@@ -96,24 +96,12 @@
 	};
 };
 
-&pcie2 {
+&pcie1 {
 	wifi@0,0 {
 		compatible = "mediatek,mt76";
 		reg = <0x0 0 0 0 0>;
 		mediatek,mtd-eeprom = <&factory 0x0>;
 		ieee80211-freq-limit = <2400000 2500000>;
-	};
-};
-
-&gmac1 {
-	status = "okay";
-	label = "wan";
-	phy-handle = <&ethphy4>;
-};
-
-&mdio {
-	ethphy4: ethernet-phy@4 {
-		reg = <4>;
 	};
 };
 
@@ -137,6 +125,11 @@
 		port@3 {
 			status = "okay";
 			label = "lan1";
+		};
+
+		wan: port@4 {
+			status = "okay";
+			label = "wan";
 		};
 	};
 };

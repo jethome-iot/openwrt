@@ -40,8 +40,6 @@ define KernelPackage/bluetooth
 	CONFIG_BT_BNEP \
 	CONFIG_BT_HCIBTUSB \
 	CONFIG_BT_HCIBTUSB_BCM=n \
-	CONFIG_BT_HCIBTUSB_MTK=y \
-	CONFIG_BT_HCIBTUSB_RTL=y \
 	CONFIG_BT_HCIUART \
 	CONFIG_BT_HCIUART_BCM=n \
 	CONFIG_BT_HCIUART_INTEL=n \
@@ -56,8 +54,7 @@ define KernelPackage/bluetooth
 	$(LINUX_DIR)/net/bluetooth/hidp/hidp.ko \
 	$(LINUX_DIR)/drivers/bluetooth/hci_uart.ko \
 	$(LINUX_DIR)/drivers/bluetooth/btusb.ko \
-	$(LINUX_DIR)/drivers/bluetooth/btintel.ko \
-	$(LINUX_DIR)/drivers/bluetooth/btrtl.ko
+	$(LINUX_DIR)/drivers/bluetooth/btintel.ko
   AUTOLOAD:=$(call AutoProbe,bluetooth rfcomm bnep hidp hci_uart btusb)
 endef
 
@@ -201,32 +198,6 @@ endef
 $(eval $(call KernelPackage,eeprom-at25))
 
 
-define KernelPackage/google-firmware
-  SUBMENU:=$(OTHER_MENU)
-  TITLE:=Google firmware drivers (Coreboot, VPD, Memconsole)
-  KCONFIG:= \
-	CONFIG_GOOGLE_FIRMWARE=y \
-	CONFIG_GOOGLE_COREBOOT_TABLE \
-	CONFIG_GOOGLE_MEMCONSOLE \
-	CONFIG_GOOGLE_MEMCONSOLE_COREBOOT \
-	CONFIG_GOOGLE_VPD
-  FILES:= \
-	  $(LINUX_DIR)/drivers/firmware/google/coreboot_table.ko \
-	  $(LINUX_DIR)/drivers/firmware/google/memconsole.ko \
-	  $(LINUX_DIR)/drivers/firmware/google/memconsole-coreboot.ko \
-	  $(LINUX_DIR)/drivers/firmware/google/vpd-sysfs.ko
-  AUTOLOAD:=$(call AutoProbe,coreboot_table memconsole-coreboot vpd-sysfs)
-endef
-
-define KernelPackage/google-firmware/description
-  Kernel modules for Google firmware drivers. Useful for examining firmware and
-  boot details on devices using a Google bootloader based on Coreboot. Provides
-  files like /sys/firmware/log and /sys/firmware/vpd.
-endef
-
-$(eval $(call KernelPackage,google-firmware))
-
-
 define KernelPackage/gpio-f7188x
   SUBMENU:=$(OTHER_MENU)
   TITLE:=Fintek F718xx/F818xx GPIO Support
@@ -243,72 +214,23 @@ endef
 $(eval $(call KernelPackage,gpio-f7188x))
 
 
-define KernelPackage/lkdtm
-  SUBMENU:=$(OTHER_MENU)
-  TITLE:=Linux Kernel Dump Test Tool Module
-  KCONFIG:=CONFIG_LKDTM
-  FILES:=$(LINUX_DIR)/drivers/misc/lkdtm/lkdtm.ko
-  AUTOLOAD:=$(call AutoProbe,lkdtm)
-endef
-
-define KernelPackage/lkdtm/description
- This module enables testing of the different dumping mechanisms by inducing
- system failures at predefined crash points.
-endef
-
-$(eval $(call KernelPackage,lkdtm))
-
-
-define KernelPackage/pinctrl-mcp23s08
+define KernelPackage/gpio-mcp23s08
   SUBMENU:=$(OTHER_MENU)
   TITLE:=Microchip MCP23xxx I/O expander
-  HIDDEN:=1
-  DEPENDS:=@GPIO_SUPPORT +kmod-regmap-core
-  KCONFIG:=CONFIG_PINCTRL_MCP23S08
-  FILES:=$(LINUX_DIR)/drivers/pinctrl/pinctrl-mcp23s08.ko
+  DEPENDS:=@GPIO_SUPPORT +kmod-i2c-core +kmod-regmap-i2c
+  KCONFIG:= \
+	CONFIG_GPIO_MCP23S08 \
+	CONFIG_PINCTRL_MCP23S08
+  FILES:= \
+	$(LINUX_DIR)/drivers/pinctrl/pinctrl-mcp23s08.ko
   AUTOLOAD:=$(call AutoLoad,40,pinctrl-mcp23s08)
 endef
 
-define KernelPackage/pinctrl-mcp23s08/description
-  Kernel module for Microchip MCP23xxx I/O expander
+define KernelPackage/gpio-mcp23s08/description
+ Kernel module for Microchip MCP23xxx SPI/I2C I/O expander
 endef
 
-$(eval $(call KernelPackage,pinctrl-mcp23s08))
-
-
-define KernelPackage/pinctrl-mcp23s08-i2c
-  SUBMENU:=$(OTHER_MENU)
-  TITLE:=Microchip MCP23xxx I/O expander (I2C)
-  DEPENDS:=@GPIO_SUPPORT \
-	+kmod-pinctrl-mcp23s08 \
-	+kmod-i2c-core \
-	+kmod-regmap-i2c
-  KCONFIG:=CONFIG_PINCTRL_MCP23S08_I2C
-  FILES:=$(LINUX_DIR)/drivers/pinctrl/pinctrl-mcp23s08_i2c.ko
-  AUTOLOAD:=$(call AutoLoad,40,pinctrl-mcp23s08-i2c)
-endef
-
-define KernelPackage/pinctrl-mcp23s08-i2c/description
-  Kernel module for Microchip MCP23xxx I/O expander via I2C
-endef
-
-$(eval $(call KernelPackage,pinctrl-mcp23s08-i2c))
-
-
-define KernelPackage/pinctrl-mcp23s08-spi
-  SUBMENU:=$(OTHER_MENU)
-  TITLE:=Microchip MCP23xxx I/O expander (SPI)
-  DEPENDS:=@GPIO_SUPPORT +kmod-pinctrl-mcp23s08
-  KCONFIG:=CONFIG_PINCTRL_MCP23S08_SPI
-  FILES:=$(LINUX_DIR)/drivers/pinctrl/pinctrl-mcp23s08_spi.ko
-  AUTOLOAD:=$(call AutoLoad,40,pinctrl-mcp23s08-spi)
-endef
-
-define KernelPackage/pinctrl-mcp23s08-spi/description
-  Kernel module for Microchip MCP23xxx I/O expander via SPI
-endef
-
-$(eval $(call KernelPackage,pinctrl-mcp23s08-spi))
+$(eval $(call KernelPackage,gpio-mcp23s08))
 
 
 define KernelPackage/gpio-nxp-74hc164
@@ -834,8 +756,7 @@ define KernelPackage/ramoops
   SUBMENU:=$(OTHER_MENU)
   TITLE:=Ramoops (pstore-ram)
   DEFAULT:=m if ALL_KMODS
-  KCONFIG:=CONFIG_PSTORE_RAM \
-	CONFIG_PSTORE_CONSOLE=y
+  KCONFIG:=CONFIG_PSTORE_RAM
   DEPENDS:=+kmod-pstore +kmod-reed-solomon
   FILES:= $(LINUX_DIR)/fs/pstore/ramoops.ko
   AUTOLOAD:=$(call AutoLoad,30,ramoops,1)
@@ -994,6 +915,7 @@ $(eval $(call KernelPackage,ikconfig))
 define KernelPackage/zram
   SUBMENU:=$(OTHER_MENU)
   TITLE:=ZRAM
+  DEPENDS:=+kmod-lib-lzo
   KCONFIG:= \
 	CONFIG_ZSMALLOC \
 	CONFIG_ZRAM \
@@ -1010,35 +932,8 @@ define KernelPackage/zram/description
  Compressed RAM block device support
 endef
 
-define KernelPackage/zram/config
-  choice
-    prompt "ZRAM Default compressor"
-    default ZRAM_DEF_COMP_LZORLE
-
-  config ZRAM_DEF_COMP_LZORLE
-            bool "lzo-rle"
-            select PACKAGE_kmod-lib-lzo
-
-  config ZRAM_DEF_COMP_LZO
-            bool "lzo"
-            select PACKAGE_kmod-lib-lzo
-
-  config ZRAM_DEF_COMP_LZ4
-            bool "lz4"
-            select PACKAGE_kmod-lib-lz4
-
-  config ZRAM_DEF_COMP_LZ4HC
-            bool "lz4-hc"
-            select PACKAGE_kmod-lib-lz4hc
-
-  config ZRAM_DEF_COMP_ZSTD
-            bool "zstd"
-            select PACKAGE_kmod-lib-zstd
-
-  endchoice
-endef
-
 $(eval $(call KernelPackage,zram))
+
 
 define KernelPackage/pps
   SUBMENU:=$(OTHER_MENU)
@@ -1231,7 +1126,9 @@ define KernelPackage/keys-trusted
   TITLE:=TPM trusted keys on kernel keyring
   DEPENDS:=@KERNEL_KEYS +kmod-crypto-hash +kmod-crypto-hmac +kmod-crypto-sha1 +kmod-tpm
   KCONFIG:=CONFIG_TRUSTED_KEYS
-  FILES:= $(LINUX_DIR)/security/keys/trusted-keys/trusted.ko
+  FILES:= \
+	  $(LINUX_DIR)/security/keys/trusted.ko@lt5.10 \
+	  $(LINUX_DIR)/security/keys/trusted-keys/trusted.ko@ge5.10
   AUTOLOAD:=$(call AutoLoad,01,trusted-keys,1)
 endef
 
@@ -1249,8 +1146,7 @@ $(eval $(call KernelPackage,keys-trusted))
 define KernelPackage/tpm
   SUBMENU:=$(OTHER_MENU)
   TITLE:=TPM Hardware Support
-  DEPENDS:= +kmod-random-core +(LINUX_5_15):kmod-asn1-decoder \
-	  +(LINUX_5_15):kmod-asn1-encoder +(LINUX_5_15):kmod-oid-registry
+  DEPENDS:= +kmod-random-core
   KCONFIG:= CONFIG_TCG_TPM
   FILES:= $(LINUX_DIR)/drivers/char/tpm/tpm.ko
   AUTOLOAD:=$(call AutoLoad,10,tpm,1)
@@ -1313,51 +1209,67 @@ endef
 $(eval $(call KernelPackage,tpm-i2c-infineon))
 
 
-define KernelPackage/i6300esb-wdt
+define KernelPackage/w83627hf-wdt
   SUBMENU:=$(OTHER_MENU)
-  TITLE:=Intel 6300ESB Timer/Watchdog
-  DEPENDS:=@PCI_SUPPORT @!SMALL_FLASH
-  KCONFIG:=CONFIG_I6300ESB_WDT \
-	   CONFIG_WATCHDOG_CORE=y
-  FILES:=$(LINUX_DIR)/drivers/$(WATCHDOG_DIR)/i6300esb.ko
-  AUTOLOAD:=$(call AutoLoad,50,i6300esb,1)
+  TITLE:=Winbond 83627HF Watchdog Timer
+  KCONFIG:=CONFIG_W83627HF_WDT
+  FILES:=$(LINUX_DIR)/drivers/$(WATCHDOG_DIR)/w83627hf_wdt.ko
+  AUTOLOAD:=$(call AutoLoad,50,w83627hf-wdt,1)
 endef
 
-define KernelPackage/i6300esb-wdt/description
-  Kernel module for the watchdog timer built into the Intel
-  6300ESB controller hub. Also used by QEMU/libvirt.
+define KernelPackage/w83627hf-wdt/description
+  Kernel module for Winbond 83627HF Watchdog Timer
 endef
 
-$(eval $(call KernelPackage,i6300esb-wdt))
+$(eval $(call KernelPackage,w83627hf-wdt))
 
 
-define KernelPackage/mhi-bus
+define KernelPackage/itco-wdt
   SUBMENU:=$(OTHER_MENU)
-  TITLE:=MHI bus
-  DEPENDS:=@LINUX_5_15
-  KCONFIG:=CONFIG_MHI_BUS \
-           CONFIG_MHI_BUS_DEBUG=y
-  FILES:=$(LINUX_DIR)/drivers/bus/mhi/core/mhi.ko
-  AUTOLOAD:=$(call AutoProbe,mhi)
+  TITLE:=Intel iTCO Watchdog Timer
+  KCONFIG:=CONFIG_ITCO_WDT \
+           CONFIG_ITCO_VENDOR_SUPPORT=y
+  FILES:=$(LINUX_DIR)/drivers/$(WATCHDOG_DIR)/iTCO_wdt.ko \
+         $(LINUX_DIR)/drivers/$(WATCHDOG_DIR)/iTCO_vendor_support.ko
+  AUTOLOAD:=$(call AutoLoad,50,iTCO_vendor_support iTCO_wdt,1)
 endef
 
-define KernelPackage/mhi-bus/description
-  Kernel module for the Qualcomm MHI bus.
+define KernelPackage/itco-wdt/description
+  Kernel module for Intel iTCO Watchdog Timer
 endef
 
-$(eval $(call KernelPackage,mhi-bus))
+$(eval $(call KernelPackage,itco-wdt))
 
-define KernelPackage/mhi-pci-generic
+
+define KernelPackage/it87-wdt
   SUBMENU:=$(OTHER_MENU)
-  TITLE:=MHI PCI controller driver
-  DEPENDS:=@LINUX_5_15 +kmod-mhi-bus
-  KCONFIG:=CONFIG_MHI_BUS_PCI_GENERIC
-  FILES:=$(LINUX_DIR)/drivers/bus/mhi/mhi_pci_generic.ko
-  AUTOLOAD:=$(call AutoProbe,mhi_pci_generic)
+  TITLE:=ITE IT87 Watchdog Timer
+  KCONFIG:=CONFIG_IT87_WDT
+  FILES:=$(LINUX_DIR)/drivers/$(WATCHDOG_DIR)/it87_wdt.ko
+  AUTOLOAD:=$(call AutoLoad,50,it87-wdt,1)
+  MODPARAMS.it87-wdt:= \
+	nogameport=1 \
+	nocir=1
 endef
 
-define KernelPackage/mhi-pci-generic/description
-  Kernel module for the MHI PCI controller driver.
+define KernelPackage/it87-wdt/description
+  Kernel module for ITE IT87 Watchdog Timer
 endef
 
-$(eval $(call KernelPackage,mhi-pci-generic))
+$(eval $(call KernelPackage,it87-wdt))
+
+
+define KernelPackage/f71808e-wdt
+  SUBMENU:=$(OTHER_MENU)
+  TITLE:=Fintek F718xx/F818xx Watchdog Timer
+  DEPENDS:=@TARGET_x86
+  KCONFIG:=CONFIG_F71808E_WDT
+  FILES:=$(LINUX_DIR)/drivers/$(WATCHDOG_DIR)/f71808e_wdt.ko
+  AUTOLOAD:=$(call AutoProbe,f71808e-wdt,1)
+endef
+
+define KernelPackage/f71808e-wdt/description
+  Kernel module for the watchdog timer found on many Fintek Super-IO chips.
+endef
+
+$(eval $(call KernelPackage,f71808e-wdt))

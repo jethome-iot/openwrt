@@ -30,6 +30,10 @@
 	status = "okay";
 };
 
+&pll {
+	clocks = <&extosc>;
+};
+
 &spi {
 	status = "okay";
 
@@ -55,10 +59,15 @@
 			};
 
 			partition@50000 {
-				/* Dual-Flash layout combined */
 				compatible = "denx,uimage";
 				label = "firmware";
-				reg = <0x050000 0xe80000>;
+				reg = <0x050000 0x740000>;
+			};
+
+			partition@790000 {
+				label = "vendor";
+				reg = <0x790000 0x740000>;
+				read-only;
 			};
 
 			partition@ed0000 {

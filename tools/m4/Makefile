@@ -21,8 +21,9 @@ include $(INCLUDE_DIR)/host-build.mk
 
 HOST_CONFIGURE_VARS += gl_cv_func_strstr_linear=no
 
-define Host/Uninstall
-	-$(call Host/Compile/Default,uninstall)
+define Host/Clean
+	-$(MAKE) -C $(HOST_BUILD_DIR) uninstall
+	$(call Host/Clean/Default)
 endef
 
 $(eval $(call HostBuild))

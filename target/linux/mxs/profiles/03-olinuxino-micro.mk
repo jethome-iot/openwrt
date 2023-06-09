@@ -5,8 +5,7 @@
 define Profile/olinuxino-micro
   NAME:=Olimex OLinuXino Micro/Nano boards
   PACKAGES += imx-bootlets uboot-mxs-mx23_olinuxino \
-	  kmod-pinctrl-mcp23s08-spi kmod-pinctrl-mcp23s08-i2c \
-	  kmod-leds-gpio
+	  kmod-gpio-mcp23s08 kmod-leds-gpio
 endef
 
 define Profile/olinuxino-micro/Description

@@ -15,7 +15,7 @@
 		serial0 = &blsp1_uart1;
 		serial1 = &blsp1_uart2;
 	};
-
+	
 	soc {
 
 		rng@22000 {
@@ -28,6 +28,10 @@
 			pinctrl-names = "default";
 			reset-gpios = <&tlmm 47 GPIO_ACTIVE_LOW>;
 			reset-delay-us = <2000>;
+		};
+
+		ess-psgmii@98000 {
+			status = "okay";
 		};
 
 		tcsr@1949000 {
@@ -89,6 +93,14 @@
 		};
 
 		watchdog@b017000 {
+			status = "okay";
+		};
+
+		ess-switch@c000000 {
+			status = "okay";
+		};
+
+		edma@c080000 {
 			status = "okay";
 		};
 

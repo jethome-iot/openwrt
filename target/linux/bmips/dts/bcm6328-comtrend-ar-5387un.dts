@@ -170,7 +170,6 @@
 			label = "lan1";
 
 			phy-handle = <&phy1>;
-			phy-mode = "mii";
 		};
 
 		port@1 {
@@ -178,7 +177,6 @@
 			label = "lan2";
 
 			phy-handle = <&phy2>;
-			phy-mode = "mii";
 		};
 
 		port@2 {
@@ -186,7 +184,6 @@
 			label = "lan3";
 
 			phy-handle = <&phy3>;
-			phy-mode = "mii";
 		};
 
 		port@3 {
@@ -194,7 +191,6 @@
 			label = "lan4";
 
 			phy-handle = <&phy4>;
-			phy-mode = "mii";
 		};
 	};
 };

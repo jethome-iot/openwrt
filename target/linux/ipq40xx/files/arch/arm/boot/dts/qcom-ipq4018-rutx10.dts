@@ -24,13 +24,3 @@
 		};
 	};
 };
-
-&wifi0 {
-	status = "okay";
-	qcom,ath10k-calibration-variant = "Teltonika-RUTX10";
-};
-
-&wifi1 {
-	status = "okay";
-	qcom,ath10k-calibration-variant = "Teltonika-RUTX10";
-};

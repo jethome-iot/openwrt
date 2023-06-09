@@ -8,33 +8,23 @@ RTC_DEV=/dev/rtc0
 HWCLOCK=/sbin/hwclock
 
 boot() {
-	hwclock_load
-	local maxtime="$(find_max_time)"
+	start && exit 0
+
+	local maxtime="$(maxtime)"
 	local curtime="$(date +%s)"
-	if [ $curtime -lt $maxtime ]; then
-		date -s @$maxtime
-		hwclock_save
-	fi
+	[ $curtime -lt $maxtime ] && date -s @$maxtime
 }
 
 start() {
-	hwclock_load
-}
-
-stop() {
-	hwclock_save
-}
-
-hwclock_load() {
 	[ -e "$RTC_DEV" ] && [ -e "$HWCLOCK" ] && $HWCLOCK -s -u -f $RTC_DEV
 }
 
-hwclock_save(){
+stop() {
 	[ -e "$RTC_DEV" ] && [ -e "$HWCLOCK" ] && $HWCLOCK -w -u -f $RTC_DEV && \
 		logger -t sysfixtime "saved '$(date)' to $RTC_DEV"
 }
 
-find_max_time() {
+maxtime() {
 	local file newest
 
 	for file in $( find /etc -type f ) ; do

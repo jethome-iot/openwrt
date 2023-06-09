@@ -328,8 +328,6 @@
 			req-mask = <0x1>; /* GNT1 */
 
 			device_type = "pci";
-
-			resets = <&reset 13 13>;
 		};
 	};
 

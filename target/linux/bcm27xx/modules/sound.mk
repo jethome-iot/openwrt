@@ -660,17 +660,14 @@ define KernelPackage/sound-soc-hifiberry-digi
   TITLE:=Support for HifiBerry Digi / Digi+ / Digi+ Pro
   KCONFIG:= \
     CONFIG_SND_BCM2708_SOC_HIFIBERRY_DIGI \
-    CONFIG_SND_SOC_WM8804 \
-    CONFIG_SND_SOC_WM8804_I2C
+    CONFIG_SND_SOC_WM8804
   FILES:= \
-    $(LINUX_DIR)/sound/soc/codecs/snd-soc-wm8804.ko \
-    $(LINUX_DIR)/sound/soc/codecs/snd-soc-wm8804-i2c.ko
-  AUTOLOAD:=$(call AutoLoad,68,snd-soc-wm8804 snd-soc-wm8804-i2c)
+    $(LINUX_DIR)/sound/soc/codecs/snd-soc-wm8804.ko
+  AUTOLOAD:=$(call AutoLoad,68,snd-soc-wm8804)
   DEPENDS:= \
     kmod-sound-soc-bcm2835-i2s \
     +kmod-sound-soc-rpi-wm8804-soundcard \
-    +kmod-i2c-bcm2835 \
-    +kmod-regmap-i2c
+    +kmod-i2c-bcm2835
   $(call AddDepends/sound)
 endef
 
@@ -806,23 +803,17 @@ define KernelPackage/sound-soc-justboom-both
   KCONFIG:= \
     CONFIG_SND_BCM2708_SOC_JUSTBOOM_BOTH \
     CONFIG_SND_SOC_PCM512x \
-    CONFIG_SND_SOC_PCM512x_I2C \
-    CONFIG_SND_SOC_WM8804 \
-    CONFIG_SND_SOC_WM8804_I2C
+    CONFIG_SND_SOC_WM8804
   FILES:= \
     $(LINUX_DIR)/sound/soc/bcm/snd-soc-justboom-both.ko \
     $(LINUX_DIR)/sound/soc/codecs/snd-soc-pcm512x.ko \
-    $(LINUX_DIR)/sound/soc/codecs/snd-soc-pcm512x-i2c.ko \
-    $(LINUX_DIR)/sound/soc/codecs/snd-soc-wm8804.ko \
-    $(LINUX_DIR)/sound/soc/codecs/snd-soc-wm8804-i2c.ko
-  AUTOLOAD:=$(call AutoLoad,68,snd-soc-pcm512x-i2c snd-soc-pcm512x \
-    snd-soc-wm8804-i2c snd-soc-wm8804 \
+    $(LINUX_DIR)/sound/soc/codecs/snd-soc-wm8804.ko
+  AUTOLOAD:=$(call AutoLoad,68,snd-soc-pcm512x snd-soc-wm8804 \
     snd-soc-justboom-both)
   DEPENDS:= \
     kmod-sound-soc-bcm2835-i2s \
     +kmod-sound-soc-rpi-wm8804-soundcard \
-    +kmod-i2c-bcm2835 \
-    +kmod-regmap-i2c
+    +kmod-i2c-bcm2835
   $(call AddDepends/sound)
 endef
 
@@ -837,18 +828,14 @@ define KernelPackage/sound-soc-justboom-dac
   TITLE:=Support for JustBoom DAC
   KCONFIG:= \
     CONFIG_SND_BCM2708_SOC_JUSTBOOM_DAC \
-    CONFIG_SND_SOC_PCM512x \
-    CONFIG_SND_SOC_PCM512x_I2C
+    CONFIG_SND_SOC_PCM512x
   FILES:= \
     $(LINUX_DIR)/sound/soc/bcm/snd-soc-justboom-dac.ko \
-    $(LINUX_DIR)/sound/soc/codecs/snd-soc-pcm512x.ko \
-    $(LINUX_DIR)/sound/soc/codecs/snd-soc-pcm512x-i2c.ko
-  AUTOLOAD:=$(call AutoLoad,68,snd-soc-pcm512x-i2c snd-soc-pcm512x \
-    snd-soc-justboom-dac)
+    $(LINUX_DIR)/sound/soc/codecs/snd-soc-pcm512x.ko
+  AUTOLOAD:=$(call AutoLoad,68,snd-soc-pcm512x snd-soc-justboom-dac)
   DEPENDS:= \
     kmod-sound-soc-bcm2835-i2s \
-    +kmod-i2c-bcm2835 \
-    +kmod-regmap-i2c
+    +kmod-i2c-bcm2835
   $(call AddDepends/sound)
 endef
 
@@ -863,17 +850,14 @@ define KernelPackage/sound-soc-justboom-digi
   TITLE:=Support for JustBoom Digi
   KCONFIG:= \
     CONFIG_SND_BCM2708_SOC_JUSTBOOM_DIGI \
-    CONFIG_SND_SOC_WM8804 \
-    CONFIG_SND_SOC_WM8804_I2C
+    CONFIG_SND_SOC_WM8804
   FILES:= \
-    $(LINUX_DIR)/sound/soc/codecs/snd-soc-wm8804.ko \
-    $(LINUX_DIR)/sound/soc/codecs/snd-soc-wm8804-i2c.ko
-  AUTOLOAD:=$(call AutoLoad,68,snd-soc-wm8804-i2c snd-soc-wm8804)
+    $(LINUX_DIR)/sound/soc/codecs/snd-soc-wm8804.ko
+  AUTOLOAD:=$(call AutoLoad,68,snd-soc-wm8804)
   DEPENDS:= \
     kmod-sound-soc-bcm2835-i2s \
     +kmod-sound-soc-rpi-wm8804-soundcard \
-    +kmod-i2c-bcm2835 \
-    +kmod-regmap-i2c
+    +kmod-i2c-bcm2835
   $(call AddDepends/sound)
 endef
 
@@ -935,7 +919,7 @@ define KernelPackage/sound-soc-rpi-cirrus
     CONFIG_MFD_ARIZONA=y \
     CONFIG_MFD_ARIZONA_I2C \
     CONFIG_MFD_CS47L24=n \
-    CONFIG_MFD_WM5102=y \
+    CONFIG_MFD_WM5102=n \
     CONFIG_MFD_WM5110=n \
     CONFIG_MFD_WM8997=n \
     CONFIG_MFD_WM8998=n \
@@ -948,8 +932,6 @@ define KernelPackage/sound-soc-rpi-cirrus
     CONFIG_SND_SOC_WM8804 \
     CONFIG_SND_SOC_WM_ADSP
   FILES:= \
-    $(LINUX_DIR)/drivers/mfd/arizona.ko \
-    $(LINUX_DIR)/drivers/mfd/arizona-i2c.ko \
     $(LINUX_DIR)/sound/soc/bcm/snd-soc-rpi-cirrus.ko \
     $(LINUX_DIR)/sound/soc/codecs/snd-soc-arizona.ko \
     $(LINUX_DIR)/sound/soc/codecs/snd-soc-wm-adsp.ko \
@@ -957,9 +939,8 @@ define KernelPackage/sound-soc-rpi-cirrus
     $(LINUX_DIR)/sound/soc/codecs/snd-soc-wm8804.ko
   AUTOLOAD:=$(call AutoLoad,68,snd-soc-pcm1794a snd-soc-rpi-cirrus)
   DEPENDS:= \
-    kmod-sound-soc-bcm2835-i2s \
     +kmod-i2c-bcm2835 \
-    +kmod-regmap-i2c
+    kmod-sound-soc-bcm2835-i2s
   $(call AddDepends/sound)
 endef
 

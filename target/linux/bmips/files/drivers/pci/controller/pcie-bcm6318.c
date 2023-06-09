@@ -19,7 +19,6 @@
 #include <linux/pci.h>
 #include <linux/reset.h>
 #include <linux/types.h>
-#include <linux/version.h>
 #include <linux/vmalloc.h>
 
 #include "../pci.h"
@@ -169,7 +168,7 @@ static int bcm6318_pcie_can_access(struct pci_bus *bus, int devfn)
 		if (PCI_SLOT(devfn) == 0)
 			return __raw_readl(priv->base + PCIE_DLSTATUS_REG)
 					& DLSTATUS_PHYLINKUP;
-		fallthrough;
+		/* else, fall through */
 	default:
 		return false;
 	}
@@ -227,6 +226,7 @@ static struct pci_controller bcm6318_pcie_controller = {
 	.pci_ops = &bcm6318_pcie_ops,
 	.io_resource = &bcm6318_pcie_io_resource,
 	.mem_resource = &bcm6318_pcie_mem_resource,
+	.busn_resource = &bcm6318_pcie_busn_resource,
 };
 
 static void bcm6318_pcie_reset(struct bcm6318_pcie *priv)
@@ -305,7 +305,6 @@ static int bcm6318_pcie_probe(struct platform_device *pdev)
 	struct bcm6318_pcie *priv = &bcm6318_pcie;
 	struct resource *res;
 	int ret;
-	LIST_HEAD(resources);
 
 	of_pci_check_probe_only();
 
@@ -371,7 +370,6 @@ static int bcm6318_pcie_probe(struct platform_device *pdev)
 		return -EINVAL;
 
 	of_pci_parse_bus_range(np, &bcm6318_pcie_busn_resource);
-	pci_add_resource(&resources, &bcm6318_pcie_busn_resource);
 
 	bcm6318_pcie_reset(priv);
 	bcm6318_pcie_setup(priv);

@@ -27,8 +27,7 @@ platform_copy_config_helper() {
 
 platform_copy_config() {
 	case "$(board_name)" in
-	erlite|\
-	ubnt,usg)
+	erlite)
 		platform_copy_config_helper /dev/sda1
 		;;
 	itus,shield-router)
@@ -92,8 +91,7 @@ platform_do_upgrade() {
 	ubnt,edgerouter-6p)
 		kernel=mmcblk0p1
 		;;
-	erlite|\
-	ubnt,usg)
+	erlite)
 		kernel=sda1
 		;;
 	itus,shield-router)
@@ -121,8 +119,7 @@ platform_check_image() {
 	erlite | \
 	itus,shield-router | \
 	ubnt,edgerouter-4 | \
-	ubnt,edgerouter-6p | \
-	ubnt,usg)
+	ubnt,edgerouter-6p)
 		local kernel_length=$(tar xf $tar_file $board_dir/kernel -O | wc -c 2> /dev/null)
 		local rootfs_length=$(tar xf $tar_file $board_dir/root -O | wc -c 2> /dev/null)
 		[ "$kernel_length" = 0 -o "$rootfs_length" = 0 ] && {

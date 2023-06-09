@@ -18,7 +18,6 @@ include $(INCLUDE_DIR)/package.mk
 
 define U-Boot/Default
   BUILD_TARGET:=omap
-  BUILD_SUBTARGET:=generic
   UBOOT_IMAGE:=u-boot.img MLO
 endef
 

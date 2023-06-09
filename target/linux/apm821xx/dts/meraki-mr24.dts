@@ -180,7 +180,7 @@
 	keys {
 		compatible = "gpio-keys";
 
-		button-restart {
+		reset {
 			/* Label as per Meraki's "MR24 Installation Guide" */
 			label = "Factory Reset Button";
 			linux,code = <KEY_RESTART>;

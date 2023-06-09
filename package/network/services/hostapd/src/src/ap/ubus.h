@@ -65,8 +65,6 @@ void hostapd_ubus_free(struct hapd_interfaces *interfaces);
 int hostapd_ubus_notify_bss_transition_query(
 	struct hostapd_data *hapd, const u8 *addr, u8 dialog_token, u8 reason,
 	const u8 *candidate_list, u16 candidate_list_len);
-void hostapd_ubus_notify_authorized(struct hostapd_data *hapd, struct sta_info *sta,
-				    const char *auth_alg);
 
 #else
 
@@ -142,13 +140,6 @@ static inline int hostapd_ubus_notify_bss_transition_query(
 {
 	return 0;
 }
-
-static inline void
-hostapd_ubus_notify_authorized(struct hostapd_data *hapd, struct sta_info *sta,
-			       const char *auth_alg)
-{
-}
-
 #endif
 
 #endif

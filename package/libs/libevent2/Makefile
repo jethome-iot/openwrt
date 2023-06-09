@@ -26,8 +26,6 @@ PKG_CONFIG_DEPENDS:= \
 	CONFIG_PACKAGE_libevent2-pthreads \
 	CONFIG_PACKAGE_libevent2-mbedtls
 
-PKG_BUILD_FLAGS:=gc-sections lto
-
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
 
@@ -114,8 +112,8 @@ define Package/libevent2-pthreads/description
 	threading & locking.
 endef
 
-TARGET_CFLAGS += $(FPIC)
-TARGET_LDFLAGS += -Wl,--as-needed
+TARGET_CFLAGS += $(FPIC) -ffunction-sections -fdata-sections -flto
+TARGET_LDFLAGS += -Wl,--gc-sections,--as-needed -flto
 
 CMAKE_OPTIONS += \
 	-DEVENT__DISABLE_BENCHMARK:BOOL=ON \

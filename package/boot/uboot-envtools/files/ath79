@@ -27,7 +27,6 @@ arduino,yun|\
 buffalo,bhr-4grv2|\
 devolo,magic-2-wifi|\
 engenius,eap1200h|\
-engenius,eap1750h|\
 engenius,eap300-v2|\
 engenius,eap350-v1|\
 engenius,eap600|\
@@ -38,11 +37,11 @@ engenius,ecb600|\
 engenius,enh202-v1|\
 engenius,ens202ext-v1|\
 engenius,enstationac-v1|\
-engenius,ews660ap|\
 etactica,eg200|\
 glinet,gl-ar750s-nor|\
 glinet,gl-ar750s-nor-nand|\
 librerouter,librerouter-v1|\
+netgear,ex6400|\
 netgear,ex7300|\
 netgear,ex7300-v2|\
 netgear,wndr4300-v2|\
@@ -67,18 +66,7 @@ openmesh,om5p-an|\
 openmesh,om5p-ac-v1|\
 openmesh,om5p-ac-v2|\
 samsung,wam250|\
-ubnt,airrouter|\
-ubnt,bullet-m-ar7240|\
-ubnt,bullet-m-ar7241|\
-ubnt,nanobridge-m|\
-ubnt,nanostation-loco-m|\
 ubnt,nanostation-m|\
-ubnt,picostation-m|\
-ubnt,powerbridge-m|\
-ubnt,rocket-m|\
-watchguard,ap100|\
-watchguard,ap200|\
-watchguard,ap300|\
 yuncore,a770|\
 yuncore,a782|\
 yuncore,a930|\
@@ -87,18 +75,6 @@ yuncore,xd4200|\
 ziking,cpe46b|\
 zyxel,nbg6616)
 	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x10000" "0x10000"
-	;;
-aruba,ap-105|\
-aruba,ap-175|\
-dongwon,dw02-412h-64m|\
-dongwon,dw02-412h-128m|\
-glinet,gl-ar300m-lite|\
-glinet,gl-ar300m-nand|\
-glinet,gl-ar300m-nor|\
-glinet,gl-ar300m16)
-	idx="$(find_mtd_index u-boot-env)"
-	[ -n "$idx" ] && \
-		ubootenv_add_uci_config "/dev/mtd$idx" "0x0" "0x10000" "0x10000"
 	;;
 buffalo,wzr-hp-ag300h)
 	ubootenv_add_uci_config "/dev/mtd3" "0x0" "0x10000" "0x10000"
@@ -111,6 +87,16 @@ linksys,ea4500-v3)
 domywifi,dw33d)
 	ubootenv_add_uci_config "/dev/mtd4" "0x0" "0x10000" "0x10000"
 	;;
+dongwon,dw02-412h-64m|\
+dongwon,dw02-412h-128m|\
+glinet,gl-ar300m-lite|\
+glinet,gl-ar300m-nand|\
+glinet,gl-ar300m-nor|\
+glinet,gl-ar300m16)
+	idx="$(find_mtd_index u-boot-env)"
+	[ -n "$idx" ] && \
+		ubootenv_add_uci_config "/dev/mtd$idx" "0x0" "0x10000" "0x10000"
+	;;
 glinet,gl-ar150)
 	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x8000" "0x10000"
 	;;
@@ -119,7 +105,6 @@ netgear,wndr3700-v2|\
 netgear,wndrmac-v1)
 	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x20000" "0x10000"
 	;;
-netgear,pgzng1|\
 netgear,wndr3700-v4|\
 netgear,wndr4300|\
 netgear,wndr4300tn|\
@@ -141,17 +126,10 @@ plasmacloud,pa300e)
 qihoo,c301)
 	ubootenv_add_uci_config "/dev/mtd9" "0x0" "0x10000" "0x10000"
 	;;
-ruckus,zf7025|\
-ruckus,zf7341|\
-ruckus,zf7351|\
-ruckus,zf7363)
-	ubootenv_add_uci_config "/dev/mtd5" "0x0" "0x40000" "0x40000"
-	;;
 ruckus,zf7321|\
 ruckus,zf7372)
 	ubootenv_add_uci_config "/dev/mtd2" "0x0" "0x40000" "0x10000"
 	;;
-sophos,ap15|\
 sophos,ap55|\
 sophos,ap55c|\
 sophos,ap100|\

@@ -5,13 +5,6 @@
 # See /LICENSE for more information.
 #
 
-config TARGET_DEFAULT_LAN_IP_FROM_PREINIT
-	bool "Use preinit IP configuration as default LAN IP" if IMAGEOPT
-	default n
-	help
-		Enabling this will set the default LAN IP address and netmask
-		to the preinit values set in the image config.
-
 menuconfig PREINITOPT
 	bool "Preinit configuration options" if IMAGEOPT
 	default n
@@ -190,7 +183,7 @@ if VERSIONOPT
 	config VERSION_REPO
 		string
 		prompt "Release repository"
-		default "https://downloads.openwrt.org/snapshots"
+		default "https://downloads.openwrt.org/releases/22.03-SNAPSHOT"
 		help
 			This is the repository address embedded in the image, it defaults
 			to the trunk snapshot repo; the url may contain the following placeholders:

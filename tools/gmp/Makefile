@@ -31,8 +31,4 @@ ifeq ($(GNU_HOST_NAME),x86_64-linux-gnux32)
 HOST_CONFIGURE_ARGS += ABI=x32
 endif
 
-define Host/Uninstall
-	-$(call Host/Compile/Default,uninstall)
-endef
-
 $(eval $(call HostBuild))

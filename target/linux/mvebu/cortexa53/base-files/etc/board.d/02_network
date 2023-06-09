@@ -21,8 +21,7 @@ globalscale,espressobin-ultra)
 	ucidef_set_interfaces_lan_wan "lan0 lan1 lan2 lan3" "wan"
 	;;
 marvell,armada-3720-db|\
-methode,udpu|\
-methode,edpu)
+methode,udpu)
 	ucidef_set_interfaces_lan_wan "eth1" "eth0"
 	;;
 *)

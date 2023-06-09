@@ -24,8 +24,4 @@ define Host/Install
 	$(INSTALL_BIN) $(HOST_BUILD_DIR)/flock $(STAGING_DIR_HOST)/bin/
 endef
 
-define Host/Clean
-	rm -f $(STAGING_DIR_HOST)/bin/flock
-endef
-
 $(eval $(call HostBuild))

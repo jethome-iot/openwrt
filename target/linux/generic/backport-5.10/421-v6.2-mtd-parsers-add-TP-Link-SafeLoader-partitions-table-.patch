@@ -72,8 +72,8 @@ Link: https://lore.kernel.org/linux-mtd/20221015092950.27467-2-zajec5@gmail.com
  obj-$(CONFIG_MTD_AFS_PARTS)		+= afs.o
 +obj-$(CONFIG_MTD_PARSER_TPLINK_SAFELOADER)	+= tplink_safeloader.o
  obj-$(CONFIG_MTD_PARSER_TRX)		+= parser_trx.o
- obj-$(CONFIG_MTD_SERCOMM_PARTS)		+= scpart.o
  obj-$(CONFIG_MTD_SHARPSL_PARTS)		+= sharpslpart.o
+ obj-$(CONFIG_MTD_REDBOOT_PARTS)		+= redboot.o
 --- /dev/null
 +++ b/drivers/mtd/parsers/tplink_safeloader.c
 @@ -0,0 +1,150 @@

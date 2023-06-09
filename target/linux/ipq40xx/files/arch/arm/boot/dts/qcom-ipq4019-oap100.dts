@@ -27,6 +27,10 @@
 			pinctrl-names = "default";
 		};
 
+		ess-psgmii@98000 {
+			status = "okay";
+		};
+
 		tcsr@1949000 {
 			compatible = "qcom,tcsr";
 			reg = <0x1949000 0x100>;
@@ -91,6 +95,17 @@
 		};
 
 		watchdog@b017000 {
+			status = "okay";
+		};
+
+		ess-switch@c000000 {
+			status = "okay";
+			switch_mac_mode = <0x0>; /* mac mode for RGMII RMII */
+			switch_initvlas = <0x0007c 0x54>; /* port0 status */
+			switch_lan_bmp = <0x10>;
+		};
+
+		edma@c080000 {
 			status = "okay";
 		};
 	};

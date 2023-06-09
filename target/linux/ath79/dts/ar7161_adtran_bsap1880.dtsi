@@ -58,6 +58,8 @@
 &mdio0 {
 	status = "okay";
 
+	phy-mask = <0x1>;
+
 	phy0: ethernet-phy@0 {
 		reg = <0>;
 	};
@@ -85,8 +87,7 @@
 		partitions {
 			#address-cells = <1>;
 			#size-cells = <1>;
-			compatible = "redboot-fis";
-			fis-index-block = <0xfd>;
+			compatible = "ecoscentric,redboot-fis-partitions";
 		};
 	};
 };

@@ -17,8 +17,7 @@ do_sysinfo_octeon() {
 		name="erpro"
 		;;
 
-	"UBNT_E300"*|\
-	"UBNT_USG"*)
+	"UBNT_E300"*)
 		# let generic 02_sysinfo handle it since device has its own device tree
 		return 0
 		;;

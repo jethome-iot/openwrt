@@ -14,25 +14,10 @@ define Build/spi-loader-okli
 	mv "$@.new" "$@"
 endef
 
-define Device/enterasys_ws-ap3715i
-  DEVICE_VENDOR := Enterasys
-  DEVICE_MODEL := WS-AP3715i
-  BLOCKSIZE := 64k
-  KERNEL_NAME := simpleImage.ws-ap3715i
-  KERNEL_ENTRY := 0x1000000
-  KERNEL_LOADADDR := 0x1000000
-  KERNEL = kernel-bin | lzma | uImage lzma
-  IMAGES := sysupgrade.bin
-  IMAGE/sysupgrade.bin := append-kernel | append-rootfs | pad-rootfs | append-metadata
-endef
-TARGET_DEVICES += enterasys_ws-ap3715i
-
 define Device/tplink_tl-wdr4900-v1
   DEVICE_VENDOR := TP-Link
   DEVICE_MODEL := TL-WDR4900
   DEVICE_VARIANT := v1
-  DEVICE_COMPAT_VERSION := 1.1
-  DEVICE_COMPAT_MESSAGE := Config cannot be migrated from swconfig to DSA
   TPLINK_HEADER_VERSION := 1
   TPLINK_HWID := 0x49000001
   TPLINK_HWREV := 1

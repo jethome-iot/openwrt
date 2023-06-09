@@ -135,7 +135,6 @@
 		compatible = "mediatek,mt76";
 		reg = <0x0000 0 0 0 0>;
 		mediatek,mtd-eeprom = <&factory 0x0>;
-		mediatek,disable-radar-background;
 	};
 };
 
@@ -144,27 +143,19 @@
 	nvmem-cell-names = "mac-address";
 };
 
-&gmac1 {
-	status = "okay";
-	label = "wan";
-	phy-handle = <&ethphy0>;
-
-	nvmem-cells = <&macaddr_factory_e000>;
-	nvmem-cell-names = "mac-address";
-	mac-address-increment = <1>;
-};
-
-&mdio {
-	ethphy0: ethernet-phy@0 {
-		reg = <0>;
-	};
-};
-
 &switch0 {
 	gpio-controller;
 	#gpio-cells = <2>;
 
 	ports {
+		port@0 {
+			status = "okay";
+			label = "wan";
+			nvmem-cells = <&macaddr_factory_e000>;
+			nvmem-cell-names = "mac-address";
+			mac-address-increment = <1>;
+		};
+
 		port@1 {
 			status = "okay";
 			label = "lan";

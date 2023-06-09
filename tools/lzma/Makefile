@@ -31,7 +31,6 @@ define Host/Install
 endef
 
 define Host/Clean
-	rm -f $(STAGING_DIR_HOST)/bin/lzma
 endef
 
 $(eval $(call HostBuild))

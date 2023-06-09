@@ -178,6 +178,7 @@
 
 		cpu_port0: port@6 {
 			reg = <6>;
+			label = "cpu";
 			ethernet = <&gmac0>;
 			phy-mode = "trgmii";
 

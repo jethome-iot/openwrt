@@ -192,7 +192,6 @@ proto_qmi_setup() {
 
 	# Cleanup current state if any
 	uqmi -s -d "$device" --stop-network 0xffffffff --autoconnect > /dev/null 2>&1
-	uqmi -s -d "$device" --set-ip-family ipv6 --stop-network 0xffffffff --autoconnect > /dev/null 2>&1
 
 	# Go online
 	uqmi -s -d "$device" --set-device-operating-mode online > /dev/null 2>&1
@@ -327,7 +326,7 @@ proto_qmi_setup() {
 		fi
 
 		# Check data connection state
-		connstat=$(uqmi -s -d "$device" --set-client-id wds,"$cid_6" --set-ip-family ipv6 --get-data-status)
+		connstat=$(uqmi -s -d "$device" --set-client-id wds,"$cid_6" --get-data-status)
 		[ "$connstat" == '"connected"' ] || {
 			echo "No data link!"
 			uqmi -s -d "$device" --set-client-id wds,"$cid_6" --release-client-id wds > /dev/null 2>&1

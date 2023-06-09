@@ -176,6 +176,8 @@
 &mdio0 {
 	status = "okay";
 
+	phy-mask = <0>;
+
 	phy0: ethernet-phy@0 {
 		reg = <0>;
 		phy-mode = "sgmii";
@@ -209,8 +211,9 @@
 &wmac {
 	status = "okay";
 
-	nvmem-cells = <&macaddr_caldata_0>, <&cal_art_1000>;
-	nvmem-cell-names = "mac-address", "calibration";
+	nvmem-cells = <&macaddr_caldata_0>;
+	nvmem-cell-names = "mac-address";
+	qca,no-eeprom;
 };
 
 &pcie {
@@ -220,8 +223,9 @@
 		/* chip is AR9580, override bogus PCI ID 168c:abcd */
 		compatible = "pci168c,0033";
 		reg = <0x0000 0 0 0 0>;
-		nvmem-cells = <&macaddr_caldata_c>, <&cal_art_5000>;
-		nvmem-cell-names = "mac-address", "calibration";
+		nvmem-cells = <&macaddr_caldata_c>;
+		nvmem-cell-names = "mac-address";
+		qca,no-eeprom;
 		qca,gpio-mask=<0xf6ff>;	/* unmask pin 9 for RFKILL button */
 		#gpio-cells = <2>;
 		gpio-controller;
@@ -233,7 +237,14 @@
 };
 
 &usb0 {
+	#address-cells = <1>;
+	#size-cells = <0>;
 	status = "okay";
+
+	hub_port0: port@1 {
+		reg = <1>;
+		#trigger-source-cells = <0>;
+	};
 };
 
 &caldata {
@@ -247,13 +258,5 @@
 
 	macaddr_caldata_c: macaddr@c {
 		reg = <0xc 0x6>;
-	};
-
-	cal_art_1000: cal@1000 {
-		reg = <0x1000 0x440>;
-	};
-
-	cal_art_5000: cal@5000 {
-		reg = <0x5000 0x440>;
 	};
 };

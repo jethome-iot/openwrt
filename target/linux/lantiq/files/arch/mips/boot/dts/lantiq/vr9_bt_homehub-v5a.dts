@@ -174,17 +174,13 @@
 	port@0 {
 		reg = <0>;
 		label = "lan3";
-		phy-mode = "rgmii-id";
-		tx-internal-delay-ps = <1500>;
-		rx-internal-delay-ps = <1500>;
+		phy-mode = "rgmii";
 		phy-handle = <&phy0>;
 	};
 	port@1 {
 		reg = <1>;
 		label = "lan4";
-		phy-mode = "rgmii-id";
-		tx-internal-delay-ps = <1500>;
-		rx-internal-delay-ps = <1500>;
+		phy-mode = "rgmii";
 		phy-handle = <&phy1>;
 	};
 	port@2 {
@@ -202,9 +198,7 @@
 	port@5 {
 		reg = <5>;
 		label = "wan";
-		phy-mode = "rgmii-id";
-		tx-internal-delay-ps = <1500>;
-		rx-internal-delay-ps = <1500>;
+		phy-mode = "rgmii";
 		phy-handle = <&phy5>;
 	};
 };

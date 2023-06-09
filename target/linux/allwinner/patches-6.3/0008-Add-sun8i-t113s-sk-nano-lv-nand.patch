@@ -1,0 +1,283 @@
+From 5e6c8c39e284ef312898c7c5b76115e29d2f7229 Mon Sep 17 00:00:00 2001
+From: Vyacheslav Bocharov <adeep@lexina.in>
+Date: Wed, 3 May 2023 11:12:30 +0300
+Subject: [PATCH 09/13] Add sun8i-t113s-sk-nano-lv-nand
+
+---
+ arch/arm/boot/dts/Makefile                    |   1 +
+ .../boot/dts/sun8i-t113s-sk-nano-lv-nand.dts  | 235 ++++++++++++++++++
+ 2 files changed, 236 insertions(+)
+ create mode 100644 arch/arm/boot/dts/sun8i-t113s-sk-nano-lv-nand.dts
+
+diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
+index 512c023b1127..b1ba8530e2cb 100644
+--- a/arch/arm/boot/dts/Makefile
++++ b/arch/arm/boot/dts/Makefile
+@@ -1397,6 +1397,7 @@ dtb-$(CONFIG_MACH_SUN8I) += \
+ 	sun8i-s3-elimo-initium.dtb \
+ 	sun8i-s3-lichee-zero-plus.dtb \
+ 	sun8i-s3-pinecube.dtb \
++	sun8i-t113s-sk-nano-lv-nand.dts \
+ 	sun8i-t113s-mangopi-mq-r.dtb \
+ 	sun8i-t3-cqa3t-bv3.dtb \
+ 	sun8i-v3-sl631-imx179.dtb \
+diff --git a/arch/arm/boot/dts/sun8i-t113s-sk-nano-lv-nand.dts b/arch/arm/boot/dts/sun8i-t113s-sk-nano-lv-nand.dts
+new file mode 100644
+index 000000000000..ccf9da284f55
+--- /dev/null
++++ b/arch/arm/boot/dts/sun8i-t113s-sk-nano-lv-nand.dts
+@@ -0,0 +1,251 @@
++// SPDX-License-Identifier: (GPL-2.0+ or MIT)
++// Copyright (C) 2022 Samuel Holland <samuel@sholland.org>
++
++/dts-v1/;
++
++#include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/leds/common.h>
++#include "sun8i-t113.dtsi"
++
++/ {
++	model = "MangoPi MQ-R";
++	compatible = "sk,nano-lv", "allwinner,sun20i-d1", "allwinner,sun8i";
++
++	aliases {
++		ethernet0 = &emac;
++		serial3 = &uart3;
++	};
++
++        chosen {
++		stdout-path = "serial3:115200n8";
++                bootargs = "mem=128M cma=48M console=ttyS3,115200 earlyprintk=sunxi-uart,0x2500c00 rootfstype=squashfs rootwait";
++        };
++
++	reg_vcc: vcc {
++		compatible = "regulator-fixed";
++		regulator-name = "vcc";
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++	};
++
++	reg_usbvbus: usbvbus {
++		compatible = "regulator-fixed";
++		regulator-name = "usbvbus";
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++		vin-supply = <&reg_vcc>;
++	};
++
++	reg_vcc_3v3: vcc-3v3 {
++		compatible = "regulator-fixed";
++		regulator-name = "vcc-3v3";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		vin-supply = <&reg_vcc>;
++	};
++
++	reg_avdd2v8: avdd2v8 {
++		compatible = "regulator-fixed";
++		regulator-name = "avdd2v8";
++		regulator-min-microvolt = <2800000>;
++		regulator-max-microvolt = <2800000>;
++		vin-supply = <&reg_vcc_3v3>;
++	};
++
++	reg_vdd_cpu: vdd-cpu {
++		compatible = "regulator-fixed";
++		regulator-name = "vdd-cpu";
++		regulator-min-microvolt = <900000>;
++		regulator-max-microvolt = <900000>;
++		vin-supply = <&reg_vcc>;
++	};
++
++	panel {
++		compatible = "okaya,rs800480t-7x0gp";
++/*        backlight = <&backlight>; */
++/*        power-supply = <&reg_sw>; */
++
++		port {
++			panel_input: endpoint {
++				remote-endpoint = <&tcon_lcd0_out_panel_in>;
++			};
++		};
++	};
++};
++
++&reg_aldo {
++	regulator-min-microvolt = <1800000>;
++	regulator-max-microvolt = <1800000>;
++	vdd33-supply = <&reg_vcc_3v3>;
++};
++
++&cpu0 {
++	cpu-supply = <&reg_vdd_cpu>;
++};
++
++&cpu1 {
++	cpu-supply = <&reg_vdd_cpu>;
++};
++
++&wdt {
++	status = "okay";
++};
++
++&pio {
++	vcc-pb-supply = <&reg_vcc_3v3>;
++	vcc-pc-supply = <&reg_vcc_3v3>;
++	vcc-pd-supply = <&reg_vcc_3v3>;
++	vcc-pe-supply = <&reg_avdd2v8>;
++	vcc-pf-supply = <&reg_vcc_3v3>;
++	vcc-pg-supply = <&reg_vcc_3v3>;
++
++        uart3_pb_pins: uart3_pb_pins {
++                pins = "PB6", "PB7";
++                function = "uart3";
++                muxsel = <5>;
++                drive-strength = <10>;
++                bias-pull-up;
++        };
++
++	rmii_pe10_pins: rmii-pe10-pins {
++		pins = "PE0", "PE1", "PE2", "PE3", "PE4",
++			   "PE5", "PE6", "PE7", "PE8", "PE9", "PE10";
++		function = "emac";
++	};
++
++	lcd_rgb666_pd19_pins: lcd-rgb666-pd19-pins {
++		pins = "PD0", "PD1", "PD2", "PD3", "PD4", "PD5",
++			   "PD6", "PD7", "PD8", "PD9", "PD10", "PD11",
++			   "PD12", "PD13", "PD14", "PD15", "PD16", "PD17",
++			   "PD18", "PD19";
++		function = "lcd0";
++	};
++};
++
++&uart3 {
++        pinctrl-0 = <&uart3_pb_pins>;
++	pinctrl-names = "default";
++        status = "okay";
++};
++
++&spi0 {
++        pinctrl-0 = <&spi0_pins>;
++        pinctrl-names = "default";
++        status = "okay";
++
++        flash@0 {
++                compatible = "spi-nand";
++                reg = <0>;
++
++                partitions {
++                        compatible = "fixed-partitions";
++                        #address-cells = <1>;
++                        #size-cells = <1>;
++
++                        partition@0 {
++                                label = "awboot";
++                                reg = <0x0 0x20000>;
++				read-only;
++                        };
++
++                        partition@40000 {
++                                label = "dtb";
++                                reg = <0x40000 0x40000>;
++                        };
++
++                        partition@80000 {
++                                label = "kernel";
++                                reg = <0x80000 0x800000>;
++                        };
++
++                        partition@880000 {
++				label = "ubi";
++                                reg = <0x880000 0x75c0000>;
++                        };
++                };
++        };
++};
++
++&usb_otg {
++	dr_mode = "otg";
++	status = "okay";
++};
++
++&ehci0 {
++	status = "okay";
++};
++
++&ehci1 {
++	status = "okay";
++};
++
++
++&ohci0 {
++	status = "okay";
++};
++
++&ohci1 {
++	status = "okay";
++};
++
++&ths {
++	status = "okay";
++/*	vref-supply = <&reg_aldo>; */
++};
++
++&usbphy {
++	usb0_vbus-supply = <&reg_usbvbus>;
++	usb1_vbus-supply = <&reg_usbvbus>;
++	status = "okay";
++};
++
++&mdio {
++	ext_rgmii_phy: ethernet-phy@1 {
++		compatible = "ethernet-phy-ieee802.3-c22";
++		reg = <0>;
++	};
++};
++
++&emac {
++	pinctrl-0 = <&rmii_pe10_pins>;
++	pinctrl-names = "default";
++	clocks = <&ccu CLK_BUS_EMAC>, <&ccu CLK_EMAC_25M>;
++	clock-names = "stmmaceth", "phy";
++	reset-gpios = <&pio 3 22 GPIO_ACTIVE_LOW>;
++	phy-handle = <&ext_rgmii_phy>;
++	phy-mode = "rmii";
++	phy-supply = <&reg_vcc_3v3>;
++	status = "okay";
++};
++
++&de {
++	status = "okay";
++};
++
++&tcon_lcd0 {
++	pinctrl-0 = <&lcd_rgb666_pd19_pins>;
++	pinctrl-names = "default";
++	status = "okay";
++};
++
++&tcon_lcd0_out {
++	tcon_lcd0_out_panel_in: endpoint {
++		remote-endpoint = <&panel_input>;
++	};
++};
++
++&rtp {
++	allwinner,tp-sensitive-adjust = <0xf>;
++	allwinner,filter-type = <0x1>;
++	allwinner,ts-attached;
++	status = "okay";
++};
++
++&codec {
++  routing = "Headphone Jack", "HPOUTL",
++      "Headphone Jack", "HPOUTR",
++      "Headset Microphone", "MICIN3";
++  widgets = "Microphone", "Headset Microphone",
++      "Headphone", "Headphone Jack";
++  status = "okay";
++};
+-- 
+2.34.1
+

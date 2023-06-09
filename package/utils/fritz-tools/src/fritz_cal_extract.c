@@ -210,7 +210,7 @@ int main(int argc, char **argv)
 	if (argc > 1 && optind <= argc) {
 		in = fopen(argv[optind], "r");
 		if (!in) {
-			perror("Failed to open input file");
+			perror("Failed to create output file");
 			goto out_bad;
 		}
 	}
@@ -253,9 +253,7 @@ out_bad:
 	ret = EXIT_FAILURE;
 
 out:
-	if (in)
-		fclose(in);
-	if (out)
-		fclose(out);
+	fclose(in);
+	fclose(out);
 	return ret;
 }

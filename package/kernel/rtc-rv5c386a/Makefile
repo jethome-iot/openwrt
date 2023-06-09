@@ -22,7 +22,8 @@ define KernelPackage/rtc-rv5c386a
 endef
 
 define Build/Compile
-	$(KERNEL_MAKE) \
+	$(MAKE) -C "$(LINUX_DIR)" \
+		$(KERNEL_MAKE_FLAGS) \
 		M="$(PKG_BUILD_DIR)" \
 		EXTRA_CFLAGS="$(BUILDFLAGS)" \
 		modules

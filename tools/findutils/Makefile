@@ -28,8 +28,4 @@ HOST_CONFIGURE_ARGS += \
 	--disable-nls \
 	--without-selinux
 
-define Host/Uninstall
-	-$(call Host/Compile/Default,uninstall)
-endef
-
 $(eval $(call HostBuild))

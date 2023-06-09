@@ -26,12 +26,8 @@ define Host/Install
 	$(LN) flex $(STAGING_DIR_HOST)/bin/lex
 endef
 
-define Host/Uninstall
-	-$(call Host/Compile/Default,uninstall)
-endef
-
 define Host/Clean
-	rm -f $(STAGING_DIR_HOST)/bin/lex
+	-$(MAKE) -C $(HOST_BUILD_DIR) uninstall
 	$(call Host/Clean/Default)
 endef
 

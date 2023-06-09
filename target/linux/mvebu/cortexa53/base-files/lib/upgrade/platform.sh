@@ -33,8 +33,7 @@ platform_do_upgrade() {
 	globalscale,espressobin-v7-emmc)
 		legacy_sdcard_do_upgrade "$1"
 		;;
-	methode,udpu|\
-	methode,edpu)
+	methode,udpu)
 		platform_do_upgrade_uDPU "$1"
 		;;
 	*)
@@ -52,8 +51,7 @@ platform_copy_config() {
 	globalscale,espressobin-v7-emmc)
 		legacy_sdcard_copy_config
 		;;
-	methode,udpu|\
-	methode,edpu)
+	methode,udpu)
 		platform_copy_config_uDPU
 		;;
 	esac

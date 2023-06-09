@@ -127,6 +127,8 @@
 &mdio0 {
 	status = "okay";
 
+	phy-mask = <0x20>;
+
 	phy5: ethernet-phy@5 {
 		reg = <5>;
 		eee-broken-100tx;

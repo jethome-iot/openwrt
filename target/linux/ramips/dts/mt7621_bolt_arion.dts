@@ -163,13 +163,9 @@
 	};
 };
 
-&ethernet {
-	pinctrl-0 = <&mdio_pins>, <&rgmii1_pins>;
-};
-
 &state_default {
 	gpio {
-		groups = "jtag", "uart2", "uart3", "wdt", "rgmii2";
+		groups = "jtag", "uart2", "uart3", "wdt";
 		function = "gpio";
 	};
 };

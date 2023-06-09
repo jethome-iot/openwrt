@@ -142,42 +142,42 @@ int selfsigned(WC_RNG *rng, char **arg) {
   newCert.isCA = 0;
 
   while (*arg && **arg == '-') {
-    if (!strcmp(*arg, "-der")) {
+    if (!strncmp(*arg, "-der", 4)) {
       pem = false;
-    } else if (!strcmp(*arg, "-newkey") && arg[1]) {
+    } else if (!strncmp(*arg, "-newkey", 6) && arg[1]) {
       if (!strncmp(arg[1], "rsa:", 4)) {
         type = RSA_KEY_TYPE;
-        keySz = atoi(arg[1] + 4);
-      } else if (!strcmp(arg[1], "ec")) {
+        keySz = (unsigned int)atoi(arg[1] + 4);
+      } else if (!strncmp(arg[1], "ec", 2)) {
         type = EC_KEY_TYPE;
       } else {
         fprintf(stderr, "error: invalid algorithm\n");
         return 1;
       }
       arg++;
-    } else if (!strcmp(*arg, "-days") && arg[1]) {
+    } else if (!strncmp(*arg, "-days", 5) && arg[1]) {
       days = (unsigned int)atoi(arg[1]);
       arg++;
-    } else if (!strcmp(*arg, "-pkeyopt") && arg[1]) {
+    } else if (!strncmp(*arg, "-pkeyopt", 8) && arg[1]) {
       if (strncmp(arg[1], "ec_paramgen_curve:", 18)) {
         fprintf(stderr, "error: invalid pkey option: %s\n", arg[1]);
         return 1;
       }
-      if (!strcmp(arg[1] + 18, "P-256")) {
+      if (!strncmp(arg[1] + 18, "P-256:", 5)) {
         curve = ECC_SECP256R1;
-      } else if (!strcmp(arg[1] + 18, "P-384")) {
+      } else if (!strncmp(arg[1] + 18, "P-384:", 5)) {
         curve = ECC_SECP384R1;
-      } else if (!strcmp(arg[1] + 18, "P-521")) {
+      } else if (!strncmp(arg[1] + 18, "P-521:", 5)) {
         curve = ECC_SECP521R1;
       } else {
         fprintf(stderr, "error: invalid curve name: %s\n", arg[1] + 18);
         return 1;
       }
       arg++;
-    } else if (!strcmp(*arg, "-keyout") && arg[1]) {
+    } else if (!strncmp(*arg, "-keyout", 7) && arg[1]) {
       keypath = arg[1];
       arg++;
-    } else if (!strcmp(*arg, "-out") && arg[1]) {
+    } else if (!strncmp(*arg, "-out", 4) && arg[1]) {
       certpath = arg[1];
       arg++;
     } else if (!strcmp(*arg, "-subj") && arg[1]) {
@@ -306,25 +306,25 @@ int dokey(WC_RNG *rng, int type, char **arg) {
   bool pem = true;
 
   while (*arg && **arg == '-') {
-    if (!strcmp(*arg, "-out") && arg[1]) {
+    if (!strncmp(*arg, "-out", 4) && arg[1]) {
       path = arg[1];
       arg++;
-    } else if (!strcmp(*arg, "-3")) {
+    } else if (!strncmp(*arg, "-3", 2)) {
       exp = 3;
-    } else if (!strcmp(*arg, "-der")) {
+    } else if (!strncmp(*arg, "-der", 4)) {
       pem = false;
     }
     arg++;
   }
 
   if (*arg && type == RSA_KEY_TYPE) {
-    keySz = atoi(*arg);
+    keySz = (unsigned int)atoi(*arg);
   } else if (*arg) {
-    if (!strcmp(*arg, "P-256")) {
+    if (!strncmp(*arg, "P-256", 5)) {
       curve = ECC_SECP256R1;
-    } else if (!strcmp(*arg, "P-384")) {
+    } else if (!strncmp(*arg, "P-384", 5)) {
       curve = ECC_SECP384R1;
-    } else if (!strcmp(*arg, "P-521")) {
+    } else if (!strncmp(*arg, "P-521", 5)) {
       curve = ECC_SECP521R1;
     } else {
       fprintf(stderr, "Invalid Curve Name: %s\n", *arg);
@@ -356,13 +356,13 @@ int main(int argc, char *argv[]) {
   }
 
   if (argv[1]) {
-    if (!strcmp(argv[1], "eckey"))
+    if (!strncmp(argv[1], "eckey", 5))
       return dokey(&rng, EC_KEY_TYPE, argv + 2);
 
-    if (!strcmp(argv[1], "rsakey"))
+    if (!strncmp(argv[1], "rsakey", 5))
       return dokey(&rng, RSA_KEY_TYPE, argv + 2);
 
-    if (!strcmp(argv[1], "selfsigned"))
+    if (!strncmp(argv[1], "selfsigned", 10))
       return selfsigned(&rng, argv + 2);
   }
 

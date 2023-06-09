@@ -187,41 +187,22 @@
 			};
 
 			partition@180000 {
-				label = "firmware";
-				reg = <0x00180000 0x01860000>;
-
-				compatible = "fixed-partitions";
-				#address-cells = <1>;
-				#size-cells = <1>;
-
-				partition@0 {
-					label = "kernel";
-					reg = <0x00000000 0x00380000>;
-
-					compatible = "fixed-partitions";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					/*
-					 * device-tree is @ 0x00180000 - 0x0019ffff
-					 * kernel starts from 0x20000.
-					 * this is coded into netgear's u-boot.
-					 */
-					partition@0 {
-						label = "dtb";
-						reg = <0x00000000 0x20000>;
-					};
+				label = "kernel";
+				reg = <0x00180000 0x00380000>;
 				/*
+				 * device-tree is @ 0x00180000 - 0x001fffff
+				 * kernel starts from 0x200000.
+				 * this is coded into netgear's u-boot.
+				 *
 				 * this partition will also contain a
 				 * fake/empty rootfs at the end to fool
 				 * Netgear's uboot rootfs integrety checks.
 				 */
-				};
+			};
 
-				partition@380000 {
-					label = "ubi";
-					reg = <0x00380000 0x014e0000>;
-				};
+			partition@500000 {
+				label = "ubi";
+				reg = <0x00500000 0x014e0000>;
 			};
 
 
@@ -355,7 +336,7 @@
 	keys {
 		compatible = "gpio-keys";
 
-		button-restart {
+		reset {
 			label = "Reset button";
 			gpios = <&GPIO0 15 GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_RESTART>;
@@ -364,7 +345,7 @@
 			debounce-interval = <60>;
 		};
 
-		button-backup_hd {
+		backup_hd {
 			label = "Backup HD button";
 			gpios = <&GPIO0 19 GPIO_ACTIVE_LOW>;
 			linux,code = <BTN_0>;
@@ -373,7 +354,7 @@
 			debounce-interval = <60>;
 		};
 
-		button-rfkill {
+		rfkill {
 			label = "RFKILL button";
 			gpios = <&GPIO0 20 GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_RFKILL>;
@@ -382,7 +363,7 @@
 			debounce-interval = <60>;
 		};
 
-		button-wps {
+		wps {
 			label = "WPS button";
 			gpios = <&GPIO0 23 GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_WPS_BUTTON>;

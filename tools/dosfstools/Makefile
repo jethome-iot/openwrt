@@ -24,8 +24,4 @@ ifeq ($(HOST_OS),Darwin)
 HOST_CFLAGS += -UHAVE_ENDIAN_H
 endif
 
-define Host/Uninstall
-	-$(call Host/Compile/Default,uninstall)
-endef
-
 $(eval $(call HostBuild))

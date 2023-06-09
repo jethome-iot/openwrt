@@ -10,9 +10,8 @@ BOARDNAME := NVIDIA Tegra
 FEATURES := audio boot-part display ext4 fpu gpio pci pcie rootfs-part rtc squashfs usb
 CPU_TYPE := cortex-a9
 CPU_SUBTYPE := vfpv3-d16
-SUBTARGETS := generic
 
-KERNEL_PATCHVER := 5.15
+KERNEL_PATCHVER := 5.10
 
 include $(INCLUDE_DIR)/target.mk
 

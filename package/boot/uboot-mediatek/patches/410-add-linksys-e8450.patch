@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/configs/mt7622_linksys_e8450_defconfig
-@@ -0,0 +1,141 @@
+@@ -0,0 +1,136 @@
 +CONFIG_ARM=y
 +CONFIG_POSITION_INDEPENDENT=y
 +CONFIG_ARCH_MEDIATEK=y
@@ -58,7 +58,7 @@
 +CONFIG_CMD_LINK_LOCAL=y
 +# CONFIG_CMD_MBR is not set
 +CONFIG_CMD_MTD=y
-+CONFIG_CMD_MTDPARTS=y
++CONFIG_CMD_MTDPART=y
 +CONFIG_CMD_PCI=y
 +CONFIG_CMD_SF_TEST=y
 +CONFIG_CMD_PING=y
@@ -126,17 +126,12 @@
 +CONFIG_MTK_SPI_NAND=y
 +CONFIG_MTK_SPI_NAND_MTD=y
 +CONFIG_SYSRESET_WATCHDOG=y
-+CONFIG_SYS_HAS_NONCACHED_MEMORY=y
 +CONFIG_WDT_MTK=y
 +CONFIG_LZO=y
 +CONFIG_ZSTD=y
 +CONFIG_HEXDUMP=y
 +CONFIG_RANDOM_UUID=y
 +CONFIG_REGEX=y
-+CONFIG_USE_IPADDR=y
-+CONFIG_IPADDR="192.168.1.1"
-+CONFIG_USE_SERVERIP=y
-+CONFIG_SERVERIP="192.168.1.254"
 +CONFIG_USB=y
 +CONFIG_USB_HOST=y
 +CONFIG_USB_XHCI_HCD=y
@@ -144,7 +139,7 @@
 +CONFIG_USB_STORAGE=y
 --- /dev/null
 +++ b/arch/arm/dts/mt7622-linksys-e8450-ubi.dts
-@@ -0,0 +1,194 @@
+@@ -0,0 +1,193 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Copyright (c) 2019 MediaTek Inc.
@@ -307,7 +302,6 @@
 +};
 +
 +&uart0 {
-+	mediatek,force-highspeed;
 +	status = "okay";
 +};
 +
@@ -341,14 +335,14 @@
 +};
 --- a/arch/arm/dts/Makefile
 +++ b/arch/arm/dts/Makefile
-@@ -1285,6 +1285,7 @@ dtb-$(CONFIG_ARCH_MEDIATEK) += \
+@@ -1133,6 +1133,7 @@ dtb-$(CONFIG_ARCH_MEDIATEK) += \
  	mt7622-rfb.dtb \
  	mt7623a-unielec-u7623-02-emmc.dtb \
  	mt7622-bananapi-bpi-r64.dtb \
 +	mt7622-linksys-e8450-ubi.dtb \
  	mt7623n-bananapi-bpi-r2.dtb \
  	mt7629-rfb.dtb \
- 	mt7981-rfb.dtb \
+ 	mt8183-pumpkin.dtb \
 --- /dev/null
 +++ b/linksys_e8450_env
 @@ -0,0 +1,57 @@

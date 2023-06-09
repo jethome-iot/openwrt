@@ -21,8 +21,4 @@ define Host/Install
        $(INSTALL_BIN) $(HOST_BUILD_DIR)/sparse $(STAGING_DIR_HOST)/bin
 endef
 
-define Host/Clean
-	rm -f $(STAGING_DIR_HOST)/bin/sparse
-endef
-
 $(eval $(call HostBuild))

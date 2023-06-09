@@ -67,8 +67,9 @@ HOST_CONFIGURE_ARGS += \
 	--enable-unicode-properties \
 	--enable-pcre16 \
 	--with-match-limit-recursion=16000 \
-	--enable-cpp \
-	--with-pic
+	--enable-cpp
+
+TARGET_CFLAGS += $(FPIC)
 
 CONFIGURE_ARGS += \
 	--enable-utf8 \
@@ -77,8 +78,7 @@ CONFIGURE_ARGS += \
 	--enable-pcre32 \
 	$(if $(CONFIG_PCRE_JIT_ENABLED),--enable-jit,--disable-jit) \
 	--with-match-limit-recursion=16000 \
-	--$(if $(CONFIG_PACKAGE_libpcrecpp),en,dis)able-cpp \
-	--with-pic
+	--$(if $(CONFIG_PACKAGE_libpcrecpp),en,dis)able-cpp
 
 MAKE_FLAGS += \
 	CFLAGS="$(TARGET_CFLAGS)"

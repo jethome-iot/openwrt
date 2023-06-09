@@ -17,7 +17,6 @@ include $(INCLUDE_DIR)/package.mk
 
 define U-Boot/Default
   BUILD_TARGET:=kirkwood
-  BUILD_SUBTARGET:=generic
 endef
 
 define U-Boot/dockstar

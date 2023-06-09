@@ -19,8 +19,6 @@ PKG_MIRROR_HASH:=0e96edc983cf437b95874e5715d743f30bb826d8757dc3771ff872ab9cf18f3
 PKG_MAINTAINER:=Felix Fietkau <nbd@nbd.name>
 PKG_LICENSE:=GPL-2.0
 
-PKG_BUILD_FLAGS:=lto
-
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
 
@@ -31,7 +29,8 @@ define Package/ustp
   DEPENDS:=+libubox +libubus
 endef
 
-TARGET_CFLAGS += -I$(STAGING_DIR)/usr/include
+TARGET_CFLAGS += -I$(STAGING_DIR)/usr/include -flto
+TARGET_LDFLAGS += -flto -fuse-linker-plugin
 
 define Package/ustp/install
 	$(INSTALL_DIR) $(1)/sbin $(1)/etc/init.d

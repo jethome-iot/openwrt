@@ -1,0 +1,62 @@
+From d120d1a63b2c484d6175873d8ee736a633f74b70 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Wed, 26 Oct 2022 15:22:15 +0200
+Subject: [PATCH] net: Remove the obsolte u64_stats_fetch_*_irq() users (net).
+
+Now that the 32bit UP oddity is gone and 32bit uses always a sequence
+count, there is no need for the fetch_irq() variants anymore.
+
+Convert to the regular interface.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+ net/8021q/vlan_dev.c           |  4 ++--
+ net/bridge/br_multicast.c      |  4 ++--
+ net/bridge/br_vlan.c           |  4 ++--
+ net/core/dev.c                 |  4 ++--
+ net/core/devlink.c             |  4 ++--
+ net/core/drop_monitor.c        |  8 ++++----
+ net/core/gen_stats.c           | 16 ++++++++--------
+ net/dsa/slave.c                |  4 ++--
+ net/ipv4/af_inet.c             |  4 ++--
+ net/ipv6/seg6_local.c          |  4 ++--
+ net/mac80211/sta_info.c        |  8 ++++----
+ net/mpls/af_mpls.c             |  4 ++--
+ net/netfilter/ipvs/ip_vs_ctl.c |  4 ++--
+ net/netfilter/nf_tables_api.c  |  4 ++--
+ net/openvswitch/datapath.c     |  4 ++--
+ net/openvswitch/flow_table.c   |  9 ++++-----
+ 16 files changed, 44 insertions(+), 45 deletions(-)
+
+
+diff --git a/net/mac80211/sta_info.c b/net/mac80211/sta_info.c
+index 6e0fd82855ae79..04e0f132b1d9c6 100644
+--- a/net/mac80211/sta_info.c
++++ b/net/mac80211/sta_info.c
+@@ -2427,9 +2427,9 @@ static inline u64 sta_get_tidstats_msdu(struct ieee80211_sta_rx_stats *rxstats,
+ 	u64 value;
+ 
+ 	do {
+-		start = u64_stats_fetch_begin_irq(&rxstats->syncp);
++		start = u64_stats_fetch_begin(&rxstats->syncp);
+ 		value = rxstats->msdu[tid];
+-	} while (u64_stats_fetch_retry_irq(&rxstats->syncp, start));
++	} while (u64_stats_fetch_retry(&rxstats->syncp, start));
+ 
+ 	return value;
+ }
+@@ -2495,9 +2495,9 @@ static inline u64 sta_get_stats_bytes(struct ieee80211_sta_rx_stats *rxstats)
+ 	u64 value;
+ 
+ 	do {
+-		start = u64_stats_fetch_begin_irq(&rxstats->syncp);
++		start = u64_stats_fetch_begin(&rxstats->syncp);
+ 		value = rxstats->bytes;
+-	} while (u64_stats_fetch_retry_irq(&rxstats->syncp, start));
++	} while (u64_stats_fetch_retry(&rxstats->syncp, start));
+ 
+ 	return value;
+ }

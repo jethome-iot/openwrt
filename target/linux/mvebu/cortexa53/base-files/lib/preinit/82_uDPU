@@ -8,8 +8,7 @@ preinit_mount_udpu() {
 	. /lib/upgrade/common.sh
 
 	case $(board_name) in
-	methode,udpu|\
-	methode,edpu)
+	methode,udpu)
 		# Check which device is detected
 		[ -b "/dev/mmcblk0" ] && mmcdev="/dev/mmcblk0" || mmcdev="/dev/mmcblk1"
 

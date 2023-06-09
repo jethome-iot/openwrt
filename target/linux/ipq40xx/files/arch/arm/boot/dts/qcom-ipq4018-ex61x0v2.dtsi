@@ -33,6 +33,10 @@
 			status = "okay";
 		};
 
+		ess-psgmii@98000 {
+			status = "okay";
+		};
+
 		tcsr@1949000 {
 			compatible = "qcom,tcsr";
 			reg = <0x1949000 0x100>;
@@ -58,6 +62,15 @@
 		watchdog@b017000 {
 			status = "okay";
 		};
+
+		ess-switch@c000000 {
+			status = "okay";
+		};
+
+		edma@c080000 {
+			status = "okay";
+			qcom,num_gmac = <1>;
+		};
 	};
 
 	aliases {
@@ -65,7 +78,7 @@
 		led-failsafe = &power_amber;
 		led-running = &power_green;
 		led-upgrade = &power_amber;
-		label-mac-device = &gmac;
+		label-mac-device = &gmac0;
 	};
 
 	keys {
@@ -323,17 +336,4 @@
 	status = "okay";
 	nvmem-cell-names = "pre-calibration", "mac-address";
 	nvmem-cells = <&precal_art_5000>, <&macaddr_dnidata_c>;
-};
-
-&gmac {
-	status = "okay";
-};
-
-&switch {
-	status = "okay";
-};
-
-&swport4 {
-	status = "okay";
-	label = "lan";
 };

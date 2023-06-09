@@ -42,18 +42,6 @@
 				label = "urlader";
 				reg = <0x00000 0x20000>;
 				read-only;
-
-				compatible = "nvmem-cells";
-				#address-cells = <1>;
-				#size-cells = <1>;
-
-				cal_urlader_985: cal@985 {
-					reg = <0x985 0x440>;
-				};
-
-				macaddr_urlader_a91: macaddr@a91 {
-					reg = <0xa91 0x6>;
-				};
 			};
 
 			partition@20000 {
@@ -90,8 +78,12 @@
 	reset-gpios = <&gpio 44 GPIO_ACTIVE_LOW>;
 };
 
-&wifi {
-	/delete-property/ qca,no-eeprom;
-	nvmem-cells = <&cal_urlader_985>;
-	nvmem-cell-names = "calibration";
+&urlader {
+	compatible = "nvmem-cells";
+	#address-cells = <1>;
+	#size-cells = <1>;
+
+	macaddr_urlader_a91: macaddr@a91 {
+		reg = <0xa91 0x6>;
+	};
 };
