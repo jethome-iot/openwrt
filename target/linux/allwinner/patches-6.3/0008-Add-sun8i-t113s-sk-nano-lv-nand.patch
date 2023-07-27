@@ -1,12 +1,12 @@
-From 5e6c8c39e284ef312898c7c5b76115e29d2f7229 Mon Sep 17 00:00:00 2001
+From 4a22e746235ffc6e9a1c4fd180f80af3bc64251a Mon Sep 17 00:00:00 2001
 From: Vyacheslav Bocharov <adeep@lexina.in>
 Date: Wed, 3 May 2023 11:12:30 +0300
-Subject: [PATCH 09/13] Add sun8i-t113s-sk-nano-lv-nand
+Subject: [PATCH 08/12] Add sun8i-t113s-sk-nano-lv-nand
 
 ---
  arch/arm/boot/dts/Makefile                    |   1 +
- .../boot/dts/sun8i-t113s-sk-nano-lv-nand.dts  | 235 ++++++++++++++++++
- 2 files changed, 236 insertions(+)
+ .../boot/dts/sun8i-t113s-sk-nano-lv-nand.dts  | 251 ++++++++++++++++++
+ 2 files changed, 252 insertions(+)
  create mode 100644 arch/arm/boot/dts/sun8i-t113s-sk-nano-lv-nand.dts
 
 diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
@@ -23,7 +23,7 @@ index 512c023b1127..b1ba8530e2cb 100644
  	sun8i-v3-sl631-imx179.dtb \
 diff --git a/arch/arm/boot/dts/sun8i-t113s-sk-nano-lv-nand.dts b/arch/arm/boot/dts/sun8i-t113s-sk-nano-lv-nand.dts
 new file mode 100644
-index 000000000000..ccf9da284f55
+index 000000000000..a930e4c105cc
 --- /dev/null
 +++ b/arch/arm/boot/dts/sun8i-t113s-sk-nano-lv-nand.dts
 @@ -0,0 +1,251 @@

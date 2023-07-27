@@ -1,5 +1,17 @@
+From 988a9b42f0500411d6dcb20d3874ddc7fc8402cb Mon Sep 17 00:00:00 2001
+From: Vyacheslav Bocharov <adeep@lexina.in>
+Date: Thu, 13 Jul 2023 14:04:05 +0300
+Subject: [PATCH 10/12] T113: Add sound codec
+
+---
+ sound/soc/sunxi/Kconfig        |   6 +
+ sound/soc/sunxi/Makefile       |   1 +
+ sound/soc/sunxi/sun20i-codec.c | 890 +++++++++++++++++++++++++++++++++
+ 3 files changed, 897 insertions(+)
+ create mode 100644 sound/soc/sunxi/sun20i-codec.c
+
 diff --git a/sound/soc/sunxi/Kconfig b/sound/soc/sunxi/Kconfig
-index 1f18f016acbb8f..cb12f12f4a0e81 100644
+index 1f18f016acbb..cb12f12f4a0e 100644
 --- a/sound/soc/sunxi/Kconfig
 +++ b/sound/soc/sunxi/Kconfig
 @@ -30,6 +30,12 @@ config SND_SUN8I_CODEC_ANALOG
@@ -16,7 +28,7 @@ index 1f18f016acbb8f..cb12f12f4a0e81 100644
  	tristate "Allwinner sun50i Codec Analog Controls Support"
  	depends on (ARM64 && ARCH_SUNXI) || COMPILE_TEST
 diff --git a/sound/soc/sunxi/Makefile b/sound/soc/sunxi/Makefile
-index 4483fe9c94ef50..40c2a8cea87380 100644
+index 4483fe9c94ef..40c2a8cea873 100644
 --- a/sound/soc/sunxi/Makefile
 +++ b/sound/soc/sunxi/Makefile
 @@ -3,6 +3,7 @@ obj-$(CONFIG_SND_SUN4I_CODEC) += sun4i-codec.o
@@ -29,7 +41,7 @@ index 4483fe9c94ef50..40c2a8cea87380 100644
  obj-$(CONFIG_SND_SUN8I_ADDA_PR_REGMAP) += sun8i-adda-pr-regmap.o
 diff --git a/sound/soc/sunxi/sun20i-codec.c b/sound/soc/sunxi/sun20i-codec.c
 new file mode 100644
-index 00000000000000..34009d60f54b2f
+index 000000000000..110c9a40e074
 --- /dev/null
 +++ b/sound/soc/sunxi/sun20i-codec.c
 @@ -0,0 +1,890 @@
@@ -923,3 +935,6 @@ index 00000000000000..34009d60f54b2f
 +MODULE_AUTHOR("Samuel Holland <samuel@sholland.org>");
 +MODULE_LICENSE("GPL");
 +MODULE_ALIAS("platform:sun20i-codec");
+-- 
+2.34.1
+

@@ -1,13 +1,13 @@
-From 67ba4af7ad2df9667042670becd271216374abd7 Mon Sep 17 00:00:00 2001
+From 4d45fa759f7d679d1a1524685e77043011644637 Mon Sep 17 00:00:00 2001
 From: Vyacheslav Bocharov <adeep@lexina.in>
 Date: Tue, 2 May 2023 14:16:35 +0300
-Subject: [PATCH 06/13] Add Mango PI MQ-R
+Subject: [PATCH 05/12] Add Mango PI MQ-R
 
 Signed-off-by: Vyacheslav Bocharov <adeep@lexina.in>
 ---
  arch/arm/boot/dts/Makefile                    |   1 +
- .../arm/boot/dts/sun8i-t113s-mangopi-mq-r.dts | 307 ++++++++++++++++++
- 2 files changed, 308 insertions(+)
+ .../arm/boot/dts/sun8i-t113s-mangopi-mq-r.dts | 316 ++++++++++++++++++
+ 2 files changed, 317 insertions(+)
  create mode 100644 arch/arm/boot/dts/sun8i-t113s-mangopi-mq-r.dts
 
 diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
@@ -24,7 +24,7 @@ index efe4152e5846..512c023b1127 100644
  	sun8i-v3s-licheepi-zero.dtb \
 diff --git a/arch/arm/boot/dts/sun8i-t113s-mangopi-mq-r.dts b/arch/arm/boot/dts/sun8i-t113s-mangopi-mq-r.dts
 new file mode 100644
-index 000000000000..de74685e8b0b
+index 000000000000..17344663f188
 --- /dev/null
 +++ b/arch/arm/boot/dts/sun8i-t113s-mangopi-mq-r.dts
 @@ -0,0 +1,316 @@

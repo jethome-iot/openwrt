@@ -1,7 +1,7 @@
-From d49ea71feac347a5bf861b7314437b8e64f2cded Mon Sep 17 00:00:00 2001
+From 386fbfadd1238794c12066381486f7306b94e4e0 Mon Sep 17 00:00:00 2001
 From: Vyacheslav Bocharov <adeep@lexina.in>
 Date: Wed, 3 May 2023 12:04:54 +0300
-Subject: [PATCH 10/13] Update sun8i-ts driver from 6.1-sk
+Subject: [PATCH 09/12] Update sun8i-ts driver from 6.1-sk
 
 ---
  drivers/input/touchscreen/sun4i-ts.c | 158 ++++++++++++++++++++++++---
