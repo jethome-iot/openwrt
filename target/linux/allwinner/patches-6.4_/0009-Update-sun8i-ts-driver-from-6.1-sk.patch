@@ -1,0 +1,266 @@
+From 386fbfadd1238794c12066381486f7306b94e4e0 Mon Sep 17 00:00:00 2001
+From: Vyacheslav Bocharov <adeep@lexina.in>
+Date: Wed, 3 May 2023 12:04:54 +0300
+Subject: [PATCH 09/12] Update sun8i-ts driver from 6.1-sk
+
+---
+ drivers/input/touchscreen/sun4i-ts.c | 158 ++++++++++++++++++++++++---
+ 1 file changed, 140 insertions(+), 18 deletions(-)
+
+diff --git a/drivers/input/touchscreen/sun4i-ts.c b/drivers/input/touchscreen/sun4i-ts.c
+index 73eb8f80be6e..b059e7b0f647 100644
+--- a/drivers/input/touchscreen/sun4i-ts.c
++++ b/drivers/input/touchscreen/sun4i-ts.c
+@@ -39,6 +39,12 @@
+ #include <linux/platform_device.h>
+ #include <linux/slab.h>
+ 
++#include <linux/clkdev.h>
++#include <linux/clk-provider.h>
++#include <linux/clk.h>
++#include <linux/reset.h>
++
++
+ #define TP_CTRL0		0x00
+ #define TP_CTRL1		0x04
+ #define TP_CTRL2		0x08
+@@ -61,13 +67,15 @@
+ /* TP_CTRL1 bits */
+ #define STYLUS_UP_DEBOUN(x)	((x) << 12) /* 8 bits */
+ #define STYLUS_UP_DEBOUN_EN(x)	((x) << 9)
+-#define TOUCH_PAN_CALI_EN(x)	((x) << 6)
+-#define TP_DUAL_EN(x)		((x) << 5)
++
++#define CHOPPER_EN(x)		((x) << 8)
++#define TOUCH_PAN_CALI_EN(x)	((x) << 7)
++#define TP_DUAL_EN(x)		((x) << 6)
+ #define TP_MODE_EN(x)		((x) << 4)
+ #define TP_ADC_SELECT(x)	((x) << 3)
+ #define ADC_CHAN_SELECT(x)	((x) << 0)  /* 3 bits */
+ 
+-/* on sun6i, bits 3~6 are left shifted by 1 to 4~7 */
++/* on sun6i/sun8i, bits 3~6 are left shifted by 1 to 4~7 */
+ #define SUN6I_TP_MODE_EN(x)	((x) << 5)
+ 
+ /* TP_CTRL2 bits */
+@@ -112,8 +120,78 @@ struct sun4i_ts_data {
+ 	int temp_data;
+ 	int temp_offset;
+ 	int temp_step;
++	struct clk *bus_clk;
++	struct clk *mod_clk;
++	struct reset_control *reset;
+ };
+ 
++static int sunxi_ts_clk_enable(struct sun4i_ts_data *ts)
++{
++	if (ts->reset)
++		reset_control_deassert(ts->reset);
++
++	if (ts->mod_clk)
++		clk_prepare_enable(ts->mod_clk);
++
++	if (ts->bus_clk)
++		clk_prepare_enable(ts->bus_clk);
++
++	return 0;
++}
++
++static int sunxi_ts_clk_disable(struct sun4i_ts_data *ts)
++{
++	if (ts->bus_clk)
++		clk_disable_unprepare(ts->mod_clk);
++
++	if (ts->mod_clk)
++		clk_disable_unprepare(ts->bus_clk);
++
++	if (ts->reset)
++		reset_control_assert(ts->reset);
++
++	return 0;
++}
++
++static int sunxi_ts_clk_init(struct sun4i_ts_data *ts)
++{
++	ts->reset = devm_reset_control_get(ts->dev, NULL);
++	if (ts->reset) {
++		reset_control_assert(ts->reset);
++		reset_control_deassert(ts->reset);
++	} else
++		pr_err("get tpadc reset failed\n");
++
++	ts->mod_clk = devm_clk_get(ts->dev, "mod");
++	if (ts->mod_clk)
++		clk_prepare_enable(ts->mod_clk);
++	else
++		pr_err("get tpadc mode clock failed \n");
++
++	ts->bus_clk = devm_clk_get(ts->dev, "bus");
++	if (ts->bus_clk)
++		clk_prepare_enable(ts->bus_clk);
++	else
++		pr_err("get tpadc bus clock failed\n");
++
++	return 0;
++}
++
++static int sunxi_ts_clk_exit(struct sun4i_ts_data *ts)
++{
++	if (ts->bus_clk) {
++		clk_disable_unprepare(ts->mod_clk);
++		devm_clk_put(ts->dev, ts->mod_clk);
++	}
++
++	if (ts->mod_clk) {
++		clk_disable_unprepare(ts->bus_clk);
++		devm_clk_put(ts->dev, ts->bus_clk);
++	}
++
++	return 0;
++}
++
+ static void sun4i_ts_irq_handle_input(struct sun4i_ts_data *ts, u32 reg_val)
+ {
+ 	u32 x, y;
+@@ -165,11 +243,18 @@ static irqreturn_t sun4i_ts_irq(int irq, void *dev_id)
+ static int sun4i_ts_open(struct input_dev *dev)
+ {
+ 	struct sun4i_ts_data *ts = input_get_drvdata(dev);
++	struct device_node *np = ts->dev->of_node;
++	u32 reg;
+ 
+ 	/* Flush, set trig level to 1, enable temp, data and up irqs */
+ 	writel(TEMP_IRQ_EN(1) | DATA_IRQ_EN(1) | FIFO_TRIG(1) | FIFO_FLUSH(1) |
+ 		TP_UP_IRQ_EN(1), ts->base + TP_INT_FIFOC);
+ 
++	if (of_device_is_compatible(np, "allwinner,sun8i-ts")) {
++		reg = readl(ts->base + TP_INT_FIFOC);
++		reg |= OVERRUN_IRQ_EN(1) | DATA_DRQ_EN(1) | TP_DOWN_IRQ_EN(1);
++		writel(reg, ts->base + TP_INT_FIFOC);
++	}
+ 	return 0;
+ }
+ 
+@@ -264,6 +349,12 @@ static int sun4i_ts_probe(struct platform_device *pdev)
+ 		 */
+ 		ts->temp_offset = 257000;
+ 		ts->temp_step = 133;
++	} else if (of_device_is_compatible(np, "allwinner,sun8i-ts")) {
++		if (sunxi_ts_clk_init(ts)) {
++			pr_err(" init tpadc clk failed! \n");
++			sunxi_ts_clk_exit(ts);
++			return -EINVAL;
++		}
+ 	} else {
+ 		/*
+ 		 * The user manuals do not contain the formula for calculating
+@@ -310,6 +401,15 @@ static int sun4i_ts_probe(struct platform_device *pdev)
+ 	if (error)
+ 		return error;
+ 
++	if (of_device_is_compatible(np, "allwinner,sun8i-ts")) {
++		/*
++		* Calibrate tpadc
++		*/
++		reg = readl(ts->base + TP_CTRL0);
++		writel(reg |= T_ACQ(0xffff), ts->base + TP_CTRL0);
++		reg = readl(ts->base + TP_CTRL1);
++		writel(reg |= TOUCH_PAN_CALI_EN(0x1), ts->base + TP_CTRL1);
++	}
+ 	/*
+ 	 * Select HOSC clk, clkin = clk / 6, adc samplefreq = clkin / 8192,
+ 	 * t_acq = clkin / (16 * 64)
+@@ -317,6 +417,11 @@ static int sun4i_ts_probe(struct platform_device *pdev)
+ 	writel(ADC_CLK_SEL(0) | ADC_CLK_DIV(2) | FS_DIV(7) | T_ACQ(63),
+ 	       ts->base + TP_CTRL0);
+ 
++	if (of_device_is_compatible(np, "allwinner,sun8i-ts"))
++		writel(ADC_FIRST_DLY(0x1) | ADC_FIRST_DLY_MODE(0x1)
++			| ADC_CLK_DIV(0x2) | FS_DIV(5) | T_ACQ(5),
++			ts->base + TP_CTRL0);
++
+ 	/*
+ 	 * tp_sensitive_adjust is an optional property
+ 	 * tp_mode = 0 : only x and y coordinates, as we don't use dual touch
+@@ -326,6 +431,11 @@ static int sun4i_ts_probe(struct platform_device *pdev)
+ 	writel(TP_SENSITIVE_ADJUST(tp_sensitive_adjust) | TP_MODE_SELECT(0),
+ 	       ts->base + TP_CTRL2);
+ 
++	if (of_device_is_compatible(np, "allwinner,sun8i-ts")) {
++		reg = readl(ts->base + TP_CTRL2);
++		writel(reg | PRE_MEA_THRE_CNT(0xfff), ts->base + TP_CTRL2);
++	}
++
+ 	/*
+ 	 * Enable median and averaging filter, optional property for
+ 	 * filter type.
+@@ -334,32 +444,43 @@ static int sun4i_ts_probe(struct platform_device *pdev)
+ 	writel(FILTER_EN(1) | FILTER_TYPE(filter_type), ts->base + TP_CTRL3);
+ 
+ 	/* Enable temperature measurement, period 1953 (2 seconds) */
+-	writel(TEMP_ENABLE(1) | TEMP_PERIOD(1953), ts->base + TP_TPR);
++	if (!of_device_is_compatible(np, "allwinner,sun8i-ts"))
++		writel(TEMP_ENABLE(1) | TEMP_PERIOD(1953), ts->base + TP_TPR);
+ 
+ 	/*
+ 	 * Set stylus up debounce to aprox 10 ms, enable debounce, and
+ 	 * finally enable tp mode.
+ 	 */
+ 	reg = STYLUS_UP_DEBOUN(5) | STYLUS_UP_DEBOUN_EN(1);
+-	if (of_device_is_compatible(np, "allwinner,sun6i-a31-ts"))
++	if (of_device_is_compatible(np, "allwinner,sun6i-a31-ts")||of_device_is_compatible(np, "allwinner,sun8i-ts"))
+ 		reg |= SUN6I_TP_MODE_EN(1);
+ 	else
+ 		reg |= TP_MODE_EN(1);
+-	writel(reg, ts->base + TP_CTRL1);
+ 
+-	/*
+-	 * The thermal core does not register hwmon devices for DT-based
+-	 * thermal zone sensors, such as this one.
+-	 */
+-	hwmon = devm_hwmon_device_register_with_groups(ts->dev, "sun4i_ts",
+-						       ts, sun4i_ts_groups);
+-	if (IS_ERR(hwmon))
+-		return PTR_ERR(hwmon);
++	if (of_device_is_compatible(np, "allwinner,sun8i-ts"))
++		reg |= CHOPPER_EN(1);
++
++	/* Select normal adc(aux-adc) mode or tpadc mode */
++	if (of_property_read_bool(np, "aux-adc"))
++		reg |= TP_ADC_SELECT(1);
++
++	writel(reg, ts->base + TP_CTRL1);
+ 
+-	thermal = devm_thermal_of_zone_register(ts->dev, 0, ts,
+-						&sun4i_ts_tz_ops);
+-	if (IS_ERR(thermal))
+-		return PTR_ERR(thermal);
++	if (!of_device_is_compatible(np, "allwinner,sun8i-ts")) {
++		/*
++		* The thermal core does not register hwmon devices for DT-based
++		* thermal zone sensors, such as this one.
++		*/
++		hwmon = devm_hwmon_device_register_with_groups(ts->dev, "sun4i_ts",
++							ts, sun4i_ts_groups);
++		if (IS_ERR(hwmon))
++			return PTR_ERR(hwmon);
++
++		thermal = devm_thermal_of_zone_register(ts->dev, 0, ts,
++							&sun4i_ts_tz_ops);
++		if (IS_ERR(thermal))
++			return PTR_ERR(thermal);
++	}
+ 
+ 	writel(TEMP_IRQ_EN(1), ts->base + TP_INT_FIFOC);
+ 
+@@ -393,6 +514,7 @@ static const struct of_device_id sun4i_ts_of_match[] = {
+ 	{ .compatible = "allwinner,sun4i-a10-ts", },
+ 	{ .compatible = "allwinner,sun5i-a13-ts", },
+ 	{ .compatible = "allwinner,sun6i-a31-ts", },
++	{ .compatible = "allwinner,sun8i-ts", },
+ 	{ /* sentinel */ }
+ };
+ MODULE_DEVICE_TABLE(of, sun4i_ts_of_match);
+-- 
+2.34.1
+

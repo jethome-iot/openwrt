@@ -1,0 +1,20 @@
+From: Felix Fietkau <nbd@nbd.name>
+Subject: Disable software protection bits for Macronix flashes.
+
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
+---
+ drivers/mtd/spi-nor/spi-nor.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/mtd/spi-nor/macronix.c b/drivers/mtd/spi-nor/macronix.c
+index 04888258e891..ca5f82b9c02b 100644
+--- a/drivers/mtd/spi-nor/macronix.c
++++ b/drivers/mtd/spi-nor/macronix.c
+@@ -108,6 +108,7 @@ static const struct flash_info macronix_nor_parts[] = {
+ static void macronix_nor_default_init(struct spi_nor *nor)
+ {
+ 	nor->params->quad_enable = spi_nor_sr1_bit6_quad_enable;
++	nor->flags |= SNOR_F_HAS_LOCK;
+ }
+ 
+ static void macronix_nor_late_init(struct spi_nor *nor)

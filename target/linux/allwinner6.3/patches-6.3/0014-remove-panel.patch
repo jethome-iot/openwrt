@@ -1,0 +1,54 @@
+From 494b54f1e5f0840878d006b5e8742d0ff441ba7d Mon Sep 17 00:00:00 2001
+From: Vyacheslav Bocharov <adeep@lexina.in>
+Date: Thu, 13 Jul 2023 18:10:48 +0300
+Subject: [PATCH 14/14] remove panel
+
+---
+ .../arm/boot/dts/sun8i-t113s-mangopi-mq-r.dts | 24 -------------------
+ 1 file changed, 24 deletions(-)
+
+diff --git a/arch/arm/boot/dts/sun8i-t113s-mangopi-mq-r.dts b/arch/arm/boot/dts/sun8i-t113s-mangopi-mq-r.dts
+index a8c29eb549ea..7ef97bf2db68 100644
+--- a/arch/arm/boot/dts/sun8i-t113s-mangopi-mq-r.dts
++++ b/arch/arm/boot/dts/sun8i-t113s-mangopi-mq-r.dts
+@@ -61,18 +61,6 @@ reg_vdd_cpu: vdd-cpu {
+ 		vin-supply = <&reg_vcc>;
+ 	};
+ 
+-	panel {
+-		compatible = "okaya,rs800480t-7x0gp";
+-/*        backlight = <&backlight>; */
+-/*        power-supply = <&reg_sw>; */
+-
+-		port {
+-			panel_input: endpoint {
+-				remote-endpoint = <&tcon_lcd0_out_panel_in>;
+-			};
+-		};
+-	};
+-
+ 	wifi_pwrseq: wifi-pwrseq {
+ 		compatible = "mmc-pwrseq-simple";
+ 		reset-gpios = <&pio 6 12 GPIO_ACTIVE_LOW>; /* PG12 */
+@@ -299,18 +287,6 @@ &can1 {
+ &de {
+ 	status = "okay";
+ };
+-/*
+-&tcon_lcd0 {
+-	pinctrl-0 = <&lcd_rgb666_pd19_pins>;
+-	pinctrl-names = "default";
+-	status = "okay";
+-};          
+-	
+-&tcon_lcd0_out {
+-	tcon_lcd0_out_panel_in: endpoint {
+-		remote-endpoint = <&panel_input>;
+-	};
+-};*/
+ 
+ &codec {
+   routing = "Headphone Jack", "HPOUTL",
+-- 
+2.34.1
+

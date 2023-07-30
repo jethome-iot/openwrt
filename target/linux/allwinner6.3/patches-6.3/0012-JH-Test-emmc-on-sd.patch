@@ -1,0 +1,39 @@
+From 4ec074054b2c1cdcf5f52613ff490a1b8683b3a5 Mon Sep 17 00:00:00 2001
+From: Vyacheslav Bocharov <adeep@lexina.in>
+Date: Thu, 13 Jul 2023 16:49:17 +0300
+Subject: [PATCH 12/12] JH: Test emmc on sd
+
+---
+ arch/arm/boot/dts/sun8i-t113s-mangopi-mq-r.dts | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm/boot/dts/sun8i-t113s-mangopi-mq-r.dts b/arch/arm/boot/dts/sun8i-t113s-mangopi-mq-r.dts
+index 17344663f188..030bd55ea77d 100644
+--- a/arch/arm/boot/dts/sun8i-t113s-mangopi-mq-r.dts
++++ b/arch/arm/boot/dts/sun8i-t113s-mangopi-mq-r.dts
+@@ -77,6 +77,10 @@ wifi_pwrseq: wifi-pwrseq {
+ 		compatible = "mmc-pwrseq-simple";
+ 		reset-gpios = <&pio 6 12 GPIO_ACTIVE_LOW>; /* PG12 */
+ 	};
++	emmc_pwrseq: emmc-pwrseq {
++		compatible = "mmc-pwrseq-simple";
++		reset-gpios = <&pio 3 16 GPIO_ACTIVE_LOW>; /* PD16 */  /* A0 B1 C2 D3 E4 F5 G6 */
++	};
+ };
+ 
+ &reg_aldo {
+@@ -202,8 +206,10 @@ partition@880000 {
+ 
+ &mmc0 {
+ 	bus-width = <4>;
+-	cd-gpios = <&pio 5 6 (GPIO_ACTIVE_LOW)>;
++	/* cd-gpios = <&pio 5 6 (GPIO_ACTIVE_LOW)>;*/
++	mmc-pwrseq = <&emmc_pwrseq>;
+ 	disable-wp;
++	/* non-removable; */
+ 	vmmc-supply = <&reg_vcc_3v3>;
+ 	vqmmc-supply = <&reg_vcc_3v3>;
+ 	pinctrl-0 = <&mmc0_pins>;
+-- 
+2.34.1
+

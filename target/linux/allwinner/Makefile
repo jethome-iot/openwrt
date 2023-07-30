@@ -10,7 +10,7 @@ BOARDNAME:=Allwinner T113
 FEATURES:=fpu usb ext4 display rootfs-part rtc squashfs
 SUBTARGETS:=cortexa7
 
-KERNEL_PATCHVER:=6.3
+KERNEL_PATCHVER:=6.4
 
 KERNELNAME:=zImage dtbs
 

@@ -1,0 +1,124 @@
+From f6aad5ff957a21f82d4e73f659c8ee51cf8e5337 Mon Sep 17 00:00:00 2001
+From: Vyacheslav Bocharov <adeep@lexina.in>
+Date: Tue, 2 May 2023 14:06:31 +0300
+Subject: [PATCH 03/12] Add support for CAN bus on Allwinner D1/T113
+
+Signed-off-by: Vyacheslav Bocharov <adeep@lexina.in>
+---
+ drivers/net/can/sun4i_can.c | 44 +++++++++++++++++++++++++++++++------
+ 1 file changed, 37 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/net/can/sun4i_can.c b/drivers/net/can/sun4i_can.c
+index 2b78f9197681..36294425cbfe 100644
+--- a/drivers/net/can/sun4i_can.c
++++ b/drivers/net/can/sun4i_can.c
+@@ -89,8 +89,6 @@
+ #define SUN4I_REG_BUF10_ADDR	0x0068	/* CAN Tx/Rx Buffer 10 */
+ #define SUN4I_REG_BUF11_ADDR	0x006c	/* CAN Tx/Rx Buffer 11 */
+ #define SUN4I_REG_BUF12_ADDR	0x0070	/* CAN Tx/Rx Buffer 12 */
+-#define SUN4I_REG_ACPC_ADDR	0x0040	/* CAN Acceptance Code 0 */
+-#define SUN4I_REG_ACPM_ADDR	0x0044	/* CAN Acceptance Mask 0 */
+ #define SUN4I_REG_RBUF_RBACK_START_ADDR	0x0180	/* CAN transmit buffer start */
+ #define SUN4I_REG_RBUF_RBACK_END_ADDR	0x01b0	/* CAN transmit buffer end */
+ 
+@@ -201,6 +199,15 @@
+ #define SUN4I_CAN_MAX_IRQ	20
+ #define SUN4I_MODE_MAX_RETRIES	100
+ 
++/**
++ * struct sun4ican_addresses - Different register addresses for some SoCs.
++ *
++ */
++struct sun4ican_addresses {
++	unsigned int can_acceptance_code;
++	unsigned int can_acceptance_mask;
++};
++
+ /**
+  * struct sun4ican_quirks - Differences between SoC variants.
+  *
+@@ -208,6 +215,7 @@
+  */
+ struct sun4ican_quirks {
+ 	bool has_reset;
++	struct sun4ican_addresses addresses;
+ };
+ 
+ struct sun4ican_priv {
+@@ -216,6 +224,7 @@ struct sun4ican_priv {
+ 	struct clk *clk;
+ 	struct reset_control *reset;
+ 	spinlock_t cmdreg_lock;	/* lock for concurrent cmd register writes */
++	struct sun4ican_addresses addresses;
+ };
+ 
+ static const struct can_bittiming_const sun4ican_bittiming_const = {
+@@ -338,8 +347,8 @@ static int sun4i_can_start(struct net_device *dev)
+ 	}
+ 
+ 	/* set filters - we accept all */
+-	writel(0x00000000, priv->base + SUN4I_REG_ACPC_ADDR);
+-	writel(0xFFFFFFFF, priv->base + SUN4I_REG_ACPM_ADDR);
++	writel(0x00000000, priv->base + priv->addresses.can_acceptance_code);
++	writel(0xFFFFFFFF, priv->base + priv->addresses.can_acceptance_mask);
+ 
+ 	/* clear error counters and error code capture */
+ 	writel(0, priv->base + SUN4I_REG_ERRC_ADDR);
+@@ -767,11 +776,27 @@ static const struct ethtool_ops sun4ican_ethtool_ops = {
+ };
+ 
+ static const struct sun4ican_quirks sun4ican_quirks_a10 = {
+-	.has_reset = false,
++	.addresses = {
++		.can_acceptance_code = 0x0040,
++		.can_acceptance_mask = 0x0044,
++	},
++	.has_reset = false
+ };
+ 
+ static const struct sun4ican_quirks sun4ican_quirks_r40 = {
+-	.has_reset = true,
++	.addresses = {
++		.can_acceptance_code = 0x0040,
++		.can_acceptance_mask = 0x0044,
++	},
++	.has_reset = true
++};
++
++static const struct sun4ican_quirks sun4ican_quirks_d1 = {
++	.addresses = {
++		.can_acceptance_code = 0x0028,
++		.can_acceptance_mask = 0x002c,
++	},
++	.has_reset = true
+ };
+ 
+ static const struct of_device_id sun4ican_of_match[] = {
+@@ -784,6 +809,9 @@ static const struct of_device_id sun4ican_of_match[] = {
+ 	}, {
+ 		.compatible = "allwinner,sun8i-r40-can",
+ 		.data = &sun4ican_quirks_r40
++	}, {
++		.compatible = "allwinner,sun20i-d1-can",
++		.data = &sun4ican_quirks_d1
+ 	}, {
+ 		/* sentinel */
+ 	},
+@@ -872,6 +900,8 @@ static int sun4ican_probe(struct platform_device *pdev)
+ 	priv->base = addr;
+ 	priv->clk = clk;
+ 	priv->reset = reset;
++	priv->addresses.can_acceptance_code = quirks->addresses.can_acceptance_code;
++	priv->addresses.can_acceptance_mask = quirks->addresses.can_acceptance_mask;
+ 	spin_lock_init(&priv->cmdreg_lock);
+ 
+ 	platform_set_drvdata(pdev, dev);
+@@ -909,4 +939,4 @@ module_platform_driver(sun4i_can_driver);
+ MODULE_AUTHOR("Peter Chen <xingkongcp@gmail.com>");
+ MODULE_AUTHOR("Gerhard Bertelsmann <info@gerhard-bertelsmann.de>");
+ MODULE_LICENSE("Dual BSD/GPL");
+-MODULE_DESCRIPTION("CAN driver for Allwinner SoCs (A10/A20)");
++MODULE_DESCRIPTION("CAN driver for Allwinner SoCs (A10/A20/D1)");
+-- 
+2.34.1
+
