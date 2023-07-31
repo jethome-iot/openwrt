@@ -10,7 +10,7 @@ Signed-off-by: Vyacheslav Bocharov <adeep@lexina.in>
  2 files changed, 94 insertions(+), 41 deletions(-)
 
 diff --git a/Documentation/devicetree/bindings/spi/allwinner,sun6i-a31-spi.yaml b/Documentation/devicetree/bindings/spi/allwinner,sun6i-a31-spi.yaml
-index acf218507d22..f3b3fe37257e 100644
+index de36c6a34a0f..4fb7ebc54e70 100644
 --- a/Documentation/devicetree/bindings/spi/allwinner,sun6i-a31-spi.yaml
 +++ b/Documentation/devicetree/bindings/spi/allwinner,sun6i-a31-spi.yaml
 @@ -21,6 +21,7 @@ properties:
@@ -36,7 +36,7 @@ index acf218507d22..f3b3fe37257e 100644
    reg:
      maxItems: 1
 diff --git a/drivers/spi/spi-sun6i.c b/drivers/spi/spi-sun6i.c
-index 23ad052528db..a80ccf0973a8 100644
+index 7532c85a352c..790f54e4dd6f 100644
 --- a/drivers/spi/spi-sun6i.c
 +++ b/drivers/spi/spi-sun6i.c
 @@ -30,6 +30,7 @@
@@ -254,8 +254,8 @@ index 23ad052528db..a80ccf0973a8 100644
  	master->bits_per_word_mask = SPI_BPW_MASK(8);
  	master->dev.of_node = pdev->dev.of_node;
  	master->auto_runtime_pm = true;
-@@ -696,9 +725,25 @@ static int sun6i_spi_remove(struct platform_device *pdev)
- 	return 0;
+@@ -695,9 +724,25 @@ static void sun6i_spi_remove(struct platform_device *pdev)
+ 		dma_release_channel(master->dma_rx);
  }
  
 +static const struct sun6i_spi_quirks sun6i_a31_spi_quirks = {
@@ -284,4 +284,3 @@ index 23ad052528db..a80ccf0973a8 100644
  MODULE_DEVICE_TABLE(of, sun6i_spi_match);
 -- 
 2.34.1
-
