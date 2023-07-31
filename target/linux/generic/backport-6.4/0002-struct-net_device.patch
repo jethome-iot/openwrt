@@ -1,6 +1,20 @@
+From a65dd2ddda9c1caaadffd993fb68cf362be0c4d9 Mon Sep 17 00:00:00 2001
+From: Viacheslav Bocharov <adeep@lexina.in>
+Date: Mon, 31 Jul 2023 14:39:45 +0300
+Subject: [PATCH 2/4] struct-net_device
+
+---
+ include/linux/netdevice.h       | 18 ++++++++++--------
+ include/net/cfg802154.h         |  2 --
+ net/batman-adv/hard-interface.c |  2 --
+ net/core/net-sysfs.c            | 21 ++++++++-------------
+ 4 files changed, 18 insertions(+), 25 deletions(-)
+
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 68adc8af29ef..bd5bc2f353a7 100644
 --- a/include/linux/netdevice.h
 +++ b/include/linux/netdevice.h
-@@ -564,8 +564,8 @@ static inline bool napi_if_scheduled_mar
+@@ -572,8 +572,8 @@ static inline bool napi_if_scheduled_mark_missed(struct napi_struct *n)
  {
  	unsigned long val, new;
  
@@ -10,7 +24,7 @@
  		if (val & NAPIF_STATE_DISABLE)
  			return true;
  
-@@ -573,7 +573,7 @@ static inline bool napi_if_scheduled_mar
+@@ -581,7 +581,7 @@ static inline bool napi_if_scheduled_mark_missed(struct napi_struct *n)
  			return false;
  
  		new = val | NAPIF_STATE_MISSED;
@@ -19,7 +33,7 @@
  
  	return true;
  }
-@@ -1875,6 +1875,7 @@ enum netdev_ml_priv_type {
+@@ -1908,6 +1908,7 @@ enum netdev_ml_priv_type {
   *	@tipc_ptr:	TIPC specific data
   *	@atalk_ptr:	AppleTalk link
   *	@ip_ptr:	IPv4 specific data
@@ -27,7 +41,7 @@
   *	@ip6_ptr:	IPv6 specific data
   *	@ax25_ptr:	AX.25 specific data
   *	@ieee80211_ptr:	IEEE 802.11 specific data, assign before registering
-@@ -2167,8 +2168,6 @@ struct net_device {
+@@ -2200,8 +2201,6 @@ struct net_device {
  
  	/* Protocol-specific pointers */
  
@@ -36,7 +50,7 @@
  #if IS_ENABLED(CONFIG_VLAN_8021Q)
  	struct vlan_info __rcu	*vlan_info;
  #endif
-@@ -2181,15 +2180,16 @@ struct net_device {
+@@ -2214,15 +2213,16 @@ struct net_device {
  #if IS_ENABLED(CONFIG_ATALK)
  	void 			*atalk_ptr;
  #endif
@@ -57,7 +71,7 @@
  #if IS_ENABLED(CONFIG_MPLS_ROUTING)
  	struct mpls_dev __rcu	*mpls_ptr;
  #endif
-@@ -2618,6 +2618,8 @@ netif_napi_add_tx_weight(struct net_devi
+@@ -2652,6 +2652,8 @@ netif_napi_add_tx_weight(struct net_device *dev,
  	netif_napi_add_weight(dev, napi, poll, weight);
  }
  
@@ -66,6 +80,8 @@
  /**
   * netif_napi_add_tx() - initialize a NAPI context to be used for Tx only
   * @dev:  network device
+diff --git a/include/net/cfg802154.h b/include/net/cfg802154.h
+index 0c2778a836db..b4b937c880e0 100644
 --- a/include/net/cfg802154.h
 +++ b/include/net/cfg802154.h
 @@ -478,7 +478,6 @@ struct wpan_dev {
@@ -76,7 +92,7 @@
  static inline int
  wpan_dev_hard_header(struct sk_buff *skb, struct net_device *dev,
  		     const struct ieee802154_addr *daddr,
-@@ -489,7 +488,6 @@ wpan_dev_hard_header(struct sk_buff *skb
+@@ -489,7 +488,6 @@ wpan_dev_hard_header(struct sk_buff *skb, struct net_device *dev,
  
  	return wpan_dev->header_ops->create(skb, dev, daddr, saddr, len);
  }
@@ -84,9 +100,11 @@
  
  struct wpan_phy *
  wpan_phy_new(const struct cfg802154_ops *ops, size_t priv_size);
+diff --git a/net/batman-adv/hard-interface.c b/net/batman-adv/hard-interface.c
+index 41c1ad33d009..e8c9465f3bc4 100644
 --- a/net/batman-adv/hard-interface.c
 +++ b/net/batman-adv/hard-interface.c
-@@ -308,11 +308,9 @@ static bool batadv_is_cfg80211_netdev(st
+@@ -308,11 +308,9 @@ static bool batadv_is_cfg80211_netdev(struct net_device *net_device)
  	if (!net_device)
  		return false;
  
@@ -98,9 +116,11 @@
  
  	return false;
  }
+diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
+index 15e3f4606b5f..b47f96655821 100644
 --- a/net/core/net-sysfs.c
 +++ b/net/core/net-sysfs.c
-@@ -747,6 +747,7 @@ static const struct attribute_group nets
+@@ -747,6 +747,7 @@ static const struct attribute_group netstat_group = {
  	.attrs  = netstat_attrs,
  };
  
@@ -108,7 +128,7 @@
  static struct attribute *wireless_attrs[] = {
  	NULL
  };
-@@ -755,19 +756,7 @@ static const struct attribute_group wire
+@@ -755,19 +756,7 @@ static const struct attribute_group wireless_group = {
  	.name = "wireless",
  	.attrs = wireless_attrs,
  };
@@ -128,7 +148,7 @@
  
  #else /* CONFIG_SYSFS */
  #define net_class_groups	NULL
-@@ -2036,8 +2025,14 @@ int netdev_register_kobject(struct net_d
+@@ -2036,8 +2025,14 @@ int netdev_register_kobject(struct net_device *ndev)
  
  	*groups++ = &netstat_group;
  
@@ -144,3 +164,6 @@
  #endif /* CONFIG_SYSFS */
  
  	error = device_add(dev);
+-- 
+2.39.2
+

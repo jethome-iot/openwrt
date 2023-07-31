@@ -1,6 +1,18 @@
+From f59845a59c2769f57a1ef392aaed10555ccc02ec Mon Sep 17 00:00:00 2001
+From: Viacheslav Bocharov <adeep@lexina.in>
+Date: Mon, 31 Jul 2023 14:34:04 +0300
+Subject: [PATCH 1/4] CONFIG_INITRAMFS_PRESERVE_MTIME
+
+---
+ init/Kconfig     | 10 ----------
+ init/initramfs.c | 28 ++++++++++++----------------
+ 2 files changed, 12 insertions(+), 26 deletions(-)
+
+diff --git a/init/Kconfig b/init/Kconfig
+index 32c24950c4ce..99d6a9d289dd 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
-@@ -1412,16 +1412,6 @@ config BOOT_CONFIG_EMBED_FILE
+@@ -1346,16 +1346,6 @@ config BOOT_CONFIG_EMBED_FILE
  	  This bootconfig will be used if there is no initrd or no other
  	  bootconfig in the initrd.
  
@@ -17,9 +29,11 @@
  choice
  	prompt "Compiler optimization level"
  	default CC_OPTIMIZE_FOR_PERFORMANCE
+diff --git a/init/initramfs.c b/init/initramfs.c
+index e7a01c2ccd1b..d3ac94875aa1 100644
 --- a/init/initramfs.c
 +++ b/init/initramfs.c
-@@ -128,17 +128,15 @@ static void __init free_hash(void)
+@@ -121,17 +121,15 @@ static void __init free_hash(void)
  	}
  }
  
@@ -44,7 +58,7 @@
  }
  
  static __initdata LIST_HEAD(dir_list);
-@@ -171,12 +169,6 @@ static void __init dir_utime(void)
+@@ -164,12 +162,6 @@ static void __init dir_utime(void)
  		kfree(de);
  	}
  }
@@ -57,7 +71,7 @@
  
  static __initdata time64_t mtime;
  
-@@ -408,10 +400,14 @@ static int __init do_name(void)
+@@ -401,10 +393,14 @@ static int __init do_name(void)
  static int __init do_copy(void)
  {
  	if (byte_count >= body_len) {
@@ -73,3 +87,6 @@
  		fput(wfile);
  		if (csum_present && io_csum != hdr_csum)
  			error("bad data checksum");
+-- 
+2.39.2
+

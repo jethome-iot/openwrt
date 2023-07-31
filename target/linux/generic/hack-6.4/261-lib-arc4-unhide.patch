@@ -1,7 +1,14 @@
-This makes it possible to select CONFIG_CRYPTO_LIB_ARC4 directly. We 
-need this to be able to compile this into the kernel and make use of it 
-from backports.
+From 97a92f56cd4051f2f7f3a7aec8ffdd2a2338392f Mon Sep 17 00:00:00 2001
+From: Viacheslav Bocharov <adeep@lexina.in>
+Date: Mon, 31 Jul 2023 15:02:54 +0300
+Subject: [PATCH] 261-lib-arc4-unhide
 
+---
+ lib/crypto/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/lib/crypto/Kconfig b/lib/crypto/Kconfig
+index 45436bfc6dff..4f7147925cf3 100644
 --- a/lib/crypto/Kconfig
 +++ b/lib/crypto/Kconfig
 @@ -15,7 +15,7 @@ config CRYPTO_LIB_AESGCM
@@ -13,3 +20,6 @@ from backports.
  
  config CRYPTO_LIB_GF128MUL
  	tristate
+-- 
+2.39.2
+

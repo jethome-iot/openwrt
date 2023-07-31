@@ -1,3 +1,14 @@
+From feca059e719935680e9a7c306cb6bbdd3a24368b Mon Sep 17 00:00:00 2001
+From: Viacheslav Bocharov <adeep@lexina.in>
+Date: Mon, 31 Jul 2023 14:53:23 +0300
+Subject: [PATCH] kconfig-exit
+
+---
+ scripts/kconfig/conf.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/scripts/kconfig/conf.c b/scripts/kconfig/conf.c
+index 33d19e419908..1a4eac125217 100644
 --- a/scripts/kconfig/conf.c
 +++ b/scripts/kconfig/conf.c
 @@ -432,6 +432,8 @@ static int conf_sym(struct menu *menu)
@@ -9,3 +20,6 @@
  			newval = oldval;
  			break;
  		case '?':
+-- 
+2.39.2
+

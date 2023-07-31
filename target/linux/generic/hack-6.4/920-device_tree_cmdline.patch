@@ -1,6 +1,17 @@
+From 311298108993d16ca56369138f687a2cbaacf286 Mon Sep 17 00:00:00 2001
+From: Viacheslav Bocharov <adeep@lexina.in>
+Date: Mon, 31 Jul 2023 15:06:31 +0300
+Subject: [PATCH] 920-device_tree_cmdline
+
+---
+ drivers/of/fdt.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
+index bf502ba8da95..1886102b2382 100644
 --- a/drivers/of/fdt.c
 +++ b/drivers/of/fdt.c
-@@ -1183,6 +1183,9 @@ int __init early_init_dt_scan_chosen(cha
+@@ -1185,6 +1185,9 @@ int __init early_init_dt_scan_chosen(char *cmdline)
  	p = of_get_flat_dt_prop(node, "bootargs", &l);
  	if (p != NULL && l > 0)
  		strscpy(cmdline, p, min(l, COMMAND_LINE_SIZE));
@@ -10,3 +21,6 @@
  
  handle_cmdline:
  	/*
+-- 
+2.39.2
+

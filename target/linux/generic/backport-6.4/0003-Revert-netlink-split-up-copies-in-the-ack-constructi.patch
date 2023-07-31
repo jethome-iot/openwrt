@@ -1,21 +1,23 @@
-From 6125304c0a0f61044171c1aa00debdc9105e5654 Mon Sep 17 00:00:00 2001
+From 726c79e9f2b3aba7c0800a7951047a2307d4a245 Mon Sep 17 00:00:00 2001
 From: Marty Jones <mj8263788@gmail.com>
 Date: Mon, 7 Nov 2022 14:30:42 -0500
-Subject: [PATCH] Revert "netlink: split up copies in the ack construction"
+Subject: [PATCH 3/4] Revert "netlink: split up copies in the ack construction"
 
 This reverts commit 738136a0e3757a8534df3ad97d6ff6d7f429f6c1.
 ---
- include/net/netlink.h        | 21 ---------------------
- include/uapi/linux/netlink.h |  2 --
- net/netlink/af_netlink.c     | 29 +++++++++--------------------
- 3 files changed, 9 insertions(+), 43 deletions(-)
+ include/net/netlink.h    | 21 ---------------------
+ net/netlink/af_netlink.c | 31 +++++++++----------------------
+ 2 files changed, 9 insertions(+), 43 deletions(-)
 
+diff --git a/include/net/netlink.h b/include/net/netlink.h
+index b12cd957abb4..9a4fdfd3e54c 100644
 --- a/include/net/netlink.h
 +++ b/include/net/netlink.h
-@@ -950,27 +950,6 @@ static inline struct nlmsghdr *nlmsg_put
+@@ -949,27 +949,6 @@ static inline struct nlmsghdr *nlmsg_put(struct sk_buff *skb, u32 portid, u32 se
+ 	return __nlmsg_put(skb, portid, seq, type, payload, flags);
  }
  
- /**
+-/**
 - * nlmsg_append - Add more data to a nlmsg in a skb
 - * @skb: socket buffer to store message in
 - * @size: length of message payload
@@ -36,13 +38,14 @@ This reverts commit 738136a0e3757a8534df3ad97d6ff6d7f429f6c1.
 -	return __skb_put(skb, NLMSG_ALIGN(size));
 -}
 -
--/**
+ /**
   * nlmsg_put_answer - Add a new callback based netlink message to an skb
   * @skb: socket buffer to store message in
-  * @cb: netlink callback
+diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
+index 5968b6450d82..32717fb94984 100644
 --- a/net/netlink/af_netlink.c
 +++ b/net/netlink/af_netlink.c
-@@ -2512,24 +2512,19 @@ void netlink_ack(struct sk_buff *in_skb,
+@@ -2482,24 +2482,19 @@ void netlink_ack(struct sk_buff *in_skb, struct nlmsghdr *nlh, int err,
  		flags |= NLM_F_ACK_TLVS;
  
  	skb = nlmsg_new(payload + tlvlen, GFP_KERNEL);
@@ -76,7 +79,7 @@ This reverts commit 738136a0e3757a8534df3ad97d6ff6d7f429f6c1.
  
  	if (tlvlen)
  		netlink_ack_tlv_fill(in_skb, skb, nlh, err, extack);
-@@ -2537,14 +2532,6 @@ void netlink_ack(struct sk_buff *in_skb,
+@@ -2507,14 +2502,6 @@ void netlink_ack(struct sk_buff *in_skb, struct nlmsghdr *nlh, int err,
  	nlmsg_end(skb, rep);
  
  	nlmsg_unicast(in_skb->sk, skb, NETLINK_CB(in_skb).portid);
@@ -91,3 +94,6 @@ This reverts commit 738136a0e3757a8534df3ad97d6ff6d7f429f6c1.
  }
  EXPORT_SYMBOL(netlink_ack);
  
+-- 
+2.39.2
+

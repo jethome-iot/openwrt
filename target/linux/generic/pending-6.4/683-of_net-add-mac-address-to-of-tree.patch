@@ -1,6 +1,17 @@
+From 183927ab2bde9aada8e1fed91262afd9c01d0faf Mon Sep 17 00:00:00 2001
+From: Viacheslav Bocharov <adeep@lexina.in>
+Date: Mon, 31 Jul 2023 14:50:16 +0300
+Subject: [PATCH] of_net-add-mac-address-to-of-tree
+
+---
+ net/core/of_net.c | 22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
+
+diff --git a/net/core/of_net.c b/net/core/of_net.c
+index d551a0b9badc..36cf7b432d5c 100644
 --- a/net/core/of_net.c
 +++ b/net/core/of_net.c
-@@ -96,6 +96,27 @@ int of_get_mac_address_nvmem(struct devi
+@@ -96,6 +96,27 @@ int of_get_mac_address_nvmem(struct device_node *np, u8 *addr)
  }
  EXPORT_SYMBOL(of_get_mac_address_nvmem);
  
@@ -28,7 +39,7 @@
  /**
   * of_get_mac_address()
   * @np:		Caller's Device Node
-@@ -176,6 +197,7 @@ found:
+@@ -176,6 +197,7 @@ int of_get_mac_address(struct device_node *np, u8 *addr)
  		addr[5] = (mac_val >> 0) & 0xff;
  	}
  
@@ -36,3 +47,6 @@
  	return ret;
  }
  EXPORT_SYMBOL(of_get_mac_address);
+-- 
+2.39.2
+

@@ -1,6 +1,18 @@
+From c61e8196a4506548ab9030fc14a288df00167e20 Mon Sep 17 00:00:00 2001
+From: Viacheslav Bocharov <adeep@lexina.in>
+Date: Mon, 31 Jul 2023 14:55:48 +0300
+Subject: [PATCH] ksmbd-config
+
+---
+ init/Kconfig | 2 +-
+ lib/Kconfig  | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/init/Kconfig b/init/Kconfig
+index 35eb69a2cdcc..71cad78dad9c 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
-@@ -2031,7 +2031,7 @@ config PADATA
+@@ -1965,7 +1965,7 @@ config PADATA
  	bool
  
  config ASN1
@@ -9,9 +21,11 @@
  	help
  	  Build a simple ASN.1 grammar compiler that produces a bytecode output
  	  that can be interpreted by the ASN.1 stream decoder and used to
+diff --git a/lib/Kconfig b/lib/Kconfig
+index 30383bba8df5..3a5972fe0408 100644
 --- a/lib/Kconfig
 +++ b/lib/Kconfig
-@@ -642,7 +642,7 @@ config LIBFDT
+@@ -646,7 +646,7 @@ config LIBFDT
  	bool
  
  config OID_REGISTRY
@@ -20,3 +34,6 @@
  	help
  	  Enable fast lookup object identifier registry.
  
+-- 
+2.39.2
+

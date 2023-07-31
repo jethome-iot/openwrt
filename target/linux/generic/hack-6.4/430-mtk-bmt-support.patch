@@ -1,3 +1,15 @@
+From c683a3061cc0e2c3f7e2ec4a2a44b523332d97bc Mon Sep 17 00:00:00 2001
+From: Viacheslav Bocharov <adeep@lexina.in>
+Date: Mon, 31 Jul 2023 15:04:46 +0300
+Subject: [PATCH] 430-mtk-bmt-support
+
+---
+ drivers/mtd/nand/Kconfig  | 4 ++++
+ drivers/mtd/nand/Makefile | 1 +
+ 2 files changed, 5 insertions(+)
+
+diff --git a/drivers/mtd/nand/Kconfig b/drivers/mtd/nand/Kconfig
+index 5b0c2c95f10c..b16b33efcb3f 100644
 --- a/drivers/mtd/nand/Kconfig
 +++ b/drivers/mtd/nand/Kconfig
 @@ -61,6 +61,10 @@ config MTD_NAND_ECC_MEDIATEK
@@ -11,6 +23,8 @@
  endmenu
  
  endmenu
+diff --git a/drivers/mtd/nand/Makefile b/drivers/mtd/nand/Makefile
+index 19e1291ac4d5..fcd41139e468 100644
 --- a/drivers/mtd/nand/Makefile
 +++ b/drivers/mtd/nand/Makefile
 @@ -3,6 +3,7 @@
@@ -21,3 +35,6 @@
  
  obj-y	+= onenand/
  obj-y	+= raw/
+-- 
+2.39.2
+

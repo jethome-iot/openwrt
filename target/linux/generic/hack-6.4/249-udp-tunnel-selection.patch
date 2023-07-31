@@ -1,3 +1,14 @@
+From 7a635d3b2884766635139a2a2ee87a4aecba68d6 Mon Sep 17 00:00:00 2001
+From: Viacheslav Bocharov <adeep@lexina.in>
+Date: Mon, 31 Jul 2023 14:54:51 +0300
+Subject: [PATCH] udp-tunnel-selection
+
+---
+ net/ipv4/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/ipv4/Kconfig b/net/ipv4/Kconfig
+index 2dfb12230f08..4c90d169307b 100644
 --- a/net/ipv4/Kconfig
 +++ b/net/ipv4/Kconfig
 @@ -315,7 +315,7 @@ config NET_IPVTI
@@ -9,3 +20,6 @@
  	select NET_IP_TUNNEL
  	default n
  
+-- 
+2.39.2
+

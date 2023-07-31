@@ -1,6 +1,27 @@
+From b5a47b5d0ddf5e5e9f4ccac505ff950f4b1bead8 Mon Sep 17 00:00:00 2001
+From: Viacheslav Bocharov <adeep@lexina.in>
+Date: Mon, 31 Jul 2023 15:04:06 +0300
+Subject: [PATCH] 410-block-fit-partition-parser
+
+---
+ block/blk.h                     |  2 ++
+ block/partitions/Kconfig        |  7 +++++++
+ block/partitions/Makefile       |  1 +
+ block/partitions/check.h        |  3 +++
+ block/partitions/core.c         | 17 +++++++++++++++++
+ block/partitions/efi.c          |  8 ++++++++
+ block/partitions/efi.h          |  3 +++
+ block/partitions/msdos.c        | 10 ++++++++++
+ drivers/mtd/mtd_blkdevs.c       |  3 +++
+ drivers/mtd/ubi/block.c         |  3 +++
+ include/linux/msdos_partition.h |  1 +
+ 11 files changed, 58 insertions(+)
+
+diff --git a/block/blk.h b/block/blk.h
+index 45547bcf1119..bfca0f222ae8 100644
 --- a/block/blk.h
 +++ b/block/blk.h
-@@ -418,6 +418,8 @@ void blk_free_ext_minor(unsigned int min
+@@ -404,6 +404,8 @@ void blk_free_ext_minor(unsigned int minor);
  #define ADDPART_FLAG_NONE	0
  #define ADDPART_FLAG_RAID	1
  #define ADDPART_FLAG_WHOLEDISK	2
@@ -9,6 +30,8 @@
  int bdev_add_partition(struct gendisk *disk, int partno, sector_t start,
  		sector_t length);
  int bdev_del_partition(struct gendisk *disk, int partno);
+diff --git a/block/partitions/Kconfig b/block/partitions/Kconfig
+index 7aff4eb81c60..7c35351edfba 100644
 --- a/block/partitions/Kconfig
 +++ b/block/partitions/Kconfig
 @@ -103,6 +103,13 @@ config ATARI_PARTITION
@@ -25,6 +48,8 @@
  config IBM_PARTITION
  	bool "IBM disk label and partition support"
  	depends on PARTITION_ADVANCED && S390
+diff --git a/block/partitions/Makefile b/block/partitions/Makefile
+index a7f05cdb02a8..d319eb1deba9 100644
 --- a/block/partitions/Makefile
 +++ b/block/partitions/Makefile
 @@ -8,6 +8,7 @@ obj-$(CONFIG_ACORN_PARTITION) += acorn.o
@@ -35,9 +60,11 @@
  obj-$(CONFIG_CMDLINE_PARTITION) += cmdline.o
  obj-$(CONFIG_MAC_PARTITION) += mac.o
  obj-$(CONFIG_LDM_PARTITION) += ldm.o
+diff --git a/block/partitions/check.h b/block/partitions/check.h
+index 8d70a880c372..e6cacef14b73 100644
 --- a/block/partitions/check.h
 +++ b/block/partitions/check.h
-@@ -57,6 +57,7 @@ int amiga_partition(struct parsed_partit
+@@ -57,6 +57,7 @@ int amiga_partition(struct parsed_partitions *state);
  int atari_partition(struct parsed_partitions *state);
  int cmdline_partition(struct parsed_partitions *state);
  int efi_partition(struct parsed_partitions *state);
@@ -45,12 +72,14 @@
  int ibm_partition(struct parsed_partitions *);
  int karma_partition(struct parsed_partitions *state);
  int ldm_partition(struct parsed_partitions *state);
-@@ -67,3 +68,5 @@ int sgi_partition(struct parsed_partitio
+@@ -67,3 +68,5 @@ int sgi_partition(struct parsed_partitions *state);
  int sun_partition(struct parsed_partitions *state);
  int sysv68_partition(struct parsed_partitions *state);
  int ultrix_partition(struct parsed_partitions *state);
 +
 +int parse_fit_partitions(struct parsed_partitions *state, u64 start_sector, u64 nr_sectors, int *slot, int add_remain);
+diff --git a/block/partitions/core.c b/block/partitions/core.c
+index 49e0496ff23c..5875a06da3e5 100644
 --- a/block/partitions/core.c
 +++ b/block/partitions/core.c
 @@ -10,6 +10,10 @@
@@ -64,7 +93,7 @@
  #include "check.h"
  
  static int (*check_part[])(struct parsed_partitions *) = {
-@@ -46,6 +50,9 @@ static int (*check_part[])(struct parsed
+@@ -46,6 +50,9 @@ static int (*check_part[])(struct parsed_partitions *) = {
  #ifdef CONFIG_EFI_PARTITION
  	efi_partition,		/* this must come before msdos */
  #endif
@@ -74,7 +103,7 @@
  #ifdef CONFIG_SGI_PARTITION
  	sgi_partition,
  #endif
-@@ -398,6 +405,11 @@ static struct block_device *add_partitio
+@@ -390,6 +397,11 @@ static struct block_device *add_partition(struct gendisk *disk, int partno,
  			goto out_del;
  	}
  
@@ -86,7 +115,7 @@
  	/* everything is up and running, commence */
  	err = xa_insert(&disk->part_tbl, partno, bdev, GFP_KERNEL);
  	if (err)
-@@ -585,6 +597,11 @@ static bool blk_add_partition(struct gen
+@@ -577,6 +589,11 @@ static bool blk_add_partition(struct gendisk *disk,
  	    (state->parts[p].flags & ADDPART_FLAG_RAID))
  		md_autodetect_dev(part->bd_dev);
  
@@ -98,33 +127,11 @@
  	return true;
  }
  
---- a/drivers/mtd/ubi/block.c
-+++ b/drivers/mtd/ubi/block.c
-@@ -413,6 +413,9 @@ int ubiblock_create(struct ubi_volume_in
- 	}
- 	gd->flags |= GENHD_FL_NO_PART;
- 	gd->private_data = dev;
-+#ifdef CONFIG_FIT_PARTITION
-+	gd->flags |= GENHD_FL_EXT_DEVT;
-+#endif
- 	sprintf(gd->disk_name, "ubiblock%d_%d", dev->ubi_num, dev->vol_id);
- 	set_capacity(gd, disk_capacity);
- 	dev->gd = gd;
---- a/drivers/mtd/mtd_blkdevs.c
-+++ b/drivers/mtd/mtd_blkdevs.c
-@@ -346,6 +346,9 @@ int add_mtd_blktrans_dev(struct mtd_blkt
- 	gd->first_minor = (new->devnum) << tr->part_bits;
- 	gd->minors = 1 << tr->part_bits;
- 	gd->fops = &mtd_block_ops;
-+#ifdef CONFIG_FIT_PARTITION
-+	gd->flags |= GENHD_FL_EXT_DEVT;
-+#endif
- 
- 	if (tr->part_bits) {
- 		if (new->devnum < 26)
+diff --git a/block/partitions/efi.c b/block/partitions/efi.c
+index 5e9be13a56a8..c98f6a0c54d8 100644
 --- a/block/partitions/efi.c
 +++ b/block/partitions/efi.c
-@@ -716,6 +716,9 @@ int efi_partition(struct parsed_partitio
+@@ -716,6 +716,9 @@ int efi_partition(struct parsed_partitions *state)
  	gpt_entry *ptes = NULL;
  	u32 i;
  	unsigned ssz = queue_logical_block_size(state->disk->queue) / 512;
@@ -134,7 +141,7 @@
  
  	if (!find_valid_gpt(state, &gpt, &ptes) || !gpt || !ptes) {
  		kfree(gpt);
-@@ -749,6 +752,11 @@ int efi_partition(struct parsed_partitio
+@@ -749,6 +752,11 @@ int efi_partition(struct parsed_partitions *state)
  				ARRAY_SIZE(ptes[i].partition_name));
  		utf16_le_to_7bit(ptes[i].partition_name, label_max, info->volname);
  		state->parts[i + 1].has_info = true;
@@ -146,6 +153,8 @@
  	}
  	kfree(ptes);
  	kfree(gpt);
+diff --git a/block/partitions/efi.h b/block/partitions/efi.h
+index 84b9f36b9e47..06c11f6ae398 100644
 --- a/block/partitions/efi.h
 +++ b/block/partitions/efi.h
 @@ -51,6 +51,9 @@
@@ -158,9 +167,11 @@
  
  typedef struct _gpt_header {
  	__le64 signature;
+diff --git a/block/partitions/msdos.c b/block/partitions/msdos.c
+index b5d5c229cc3b..ff7e74911359 100644
 --- a/block/partitions/msdos.c
 +++ b/block/partitions/msdos.c
-@@ -564,6 +564,15 @@ static void parse_minix(struct parsed_pa
+@@ -564,6 +564,15 @@ static void parse_minix(struct parsed_partitions *state,
  #endif /* CONFIG_MINIX_SUBPARTITION */
  }
  
@@ -184,6 +195,36 @@
  	{0, NULL},
  };
  
+diff --git a/drivers/mtd/mtd_blkdevs.c b/drivers/mtd/mtd_blkdevs.c
+index 60b222799871..06e09f5b1dd3 100644
+--- a/drivers/mtd/mtd_blkdevs.c
++++ b/drivers/mtd/mtd_blkdevs.c
+@@ -346,6 +346,9 @@ int add_mtd_blktrans_dev(struct mtd_blktrans_dev *new)
+ 	gd->first_minor = (new->devnum) << tr->part_bits;
+ 	gd->minors = 1 << tr->part_bits;
+ 	gd->fops = &mtd_block_ops;
++#ifdef CONFIG_FIT_PARTITION
++	gd->flags |= GENHD_FL_EXT_DEVT;
++#endif
+ 
+ 	if (tr->part_bits) {
+ 		if (new->devnum < 26)
+diff --git a/drivers/mtd/ubi/block.c b/drivers/mtd/ubi/block.c
+index 83bcd72bf24f..7b59576536ff 100644
+--- a/drivers/mtd/ubi/block.c
++++ b/drivers/mtd/ubi/block.c
+@@ -413,6 +413,9 @@ int ubiblock_create(struct ubi_volume_info *vi)
+ 	}
+ 	gd->flags |= GENHD_FL_NO_PART;
+ 	gd->private_data = dev;
++#ifdef CONFIG_FIT_PARTITION
++	gd->flags |= GENHD_FL_EXT_DEVT;
++#endif
+ 	sprintf(gd->disk_name, "ubiblock%d_%d", dev->ubi_num, dev->vol_id);
+ 	set_capacity(gd, disk_capacity);
+ 	dev->gd = gd;
+diff --git a/include/linux/msdos_partition.h b/include/linux/msdos_partition.h
+index 2cb82db2a43c..c15b6c759aca 100644
 --- a/include/linux/msdos_partition.h
 +++ b/include/linux/msdos_partition.h
 @@ -31,6 +31,7 @@ enum msdos_sys_ind {
@@ -194,3 +235,6 @@
  	SOLARIS_X86_PARTITION =	0x82,	/* also Linux swap partitions */
  	NEW_SOLARIS_X86_PARTITION = 0xbf,
  
+-- 
+2.39.2
+

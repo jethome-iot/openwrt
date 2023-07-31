@@ -1,6 +1,18 @@
+From bb23a85378643802ddb4b715e45a03cef7da4e63 Mon Sep 17 00:00:00 2001
+From: Viacheslav Bocharov <adeep@lexina.in>
+Date: Mon, 31 Jul 2023 15:05:49 +0300
+Subject: [PATCH] 780-usb-net-MeigLink_modem_support
+
+---
+ drivers/net/usb/qmi_wwan.c  | 1 +
+ drivers/usb/serial/option.c | 7 +++++++
+ 2 files changed, 8 insertions(+)
+
+diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
+index 2e7c7b0cdc54..60ca039de77a 100644
 --- a/drivers/net/usb/qmi_wwan.c
 +++ b/drivers/net/usb/qmi_wwan.c
-@@ -1089,6 +1089,7 @@ static const struct usb_device_id produc
+@@ -1089,6 +1089,7 @@ static const struct usb_device_id products[] = {
  	{QMI_MATCH_FF_FF_FF(0x2c7c, 0x0620)},	/* Quectel EM160R-GL */
  	{QMI_MATCH_FF_FF_FF(0x2c7c, 0x0800)},	/* Quectel RM500Q-GL */
  	{QMI_MATCH_FF_FF_FF(0x2c7c, 0x0801)},	/* Quectel RM520N */
@@ -8,9 +20,11 @@
  
  	/* 3. Combined interface devices matching on interface number */
  	{QMI_FIXED_INTF(0x0408, 0xea42, 4)},	/* Yota / Megafon M100-1 */
+diff --git a/drivers/usb/serial/option.c b/drivers/usb/serial/option.c
+index 288a96a74266..25cdadc9feeb 100644
 --- a/drivers/usb/serial/option.c
 +++ b/drivers/usb/serial/option.c
-@@ -244,6 +244,8 @@ static void option_instat_callback(struc
+@@ -244,6 +244,8 @@ static void option_instat_callback(struct urb *urb);
  #define UBLOX_PRODUCT_R410M			0x90b2
  /* These Yuga products use Qualcomm's vendor ID */
  #define YUGA_PRODUCT_CLM920_NC5			0x9625
@@ -19,7 +33,7 @@
  
  #define QUECTEL_VENDOR_ID			0x2c7c
  /* These Quectel products use Quectel's vendor ID */
-@@ -1164,6 +1166,11 @@ static const struct usb_device_id option
+@@ -1177,6 +1179,11 @@ static const struct usb_device_id option_ids[] = {
  	  .driver_info = ZLP },
  	{ USB_DEVICE(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_BG96),
  	  .driver_info = RSVD(4) },
@@ -31,3 +45,6 @@
  	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_EP06, 0xff, 0xff, 0xff),
  	  .driver_info = RSVD(1) | RSVD(2) | RSVD(3) | RSVD(4) | NUMEP2 },
  	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_EP06, 0xff, 0, 0) },
+-- 
+2.39.2
+
